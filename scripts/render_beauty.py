@@ -10,9 +10,13 @@ assert s.get('revision')==a.revision,(s.get('revision'),a.revision)
 s.render.engine='CYCLES';s.cycles.device='CPU';s.cycles.samples=256;s.cycles.time_limit=a.seconds;s.cycles.use_denoising=False;s.cycles.adaptive_threshold=.012;s.cycles.max_bounces=8;s.cycles.transmission_bounces=6;s.cycles.glossy_bounces=4;s.cycles.diffuse_bounces=3;s.render.resolution_x=a.resolution;s.render.resolution_y=a.resolution;s.render.resolution_percentage=100
 for mat in bpy.data.materials:
  if mat.name.startswith('02 •'):
-  n=mat.node_tree.nodes;l=mat.node_tree.links;attr=n.new('ShaderNodeAttribute');attr.attribute_name='Coat';hair=n.new('ShaderNodeBsdfHairPrincipled');hair.parametrization='COLOR';hair.inputs['Roughness'].default_value=.48;hair.inputs['Radial Roughness'].default_value=.55;l.new(attr.outputs['Color'],hair.inputs['Color']);l.new(hair.outputs[0],n.get('Material Output').inputs['Surface'])
+  n=mat.node_tree.nodes;l=mat.node_tree.links;attr=n.new('ShaderNodeAttribute');attr.attribute_name='Coat';hair=n.new('ShaderNodeBsdfHairPrincipled');hair.parametrization='COLOR';hair.inputs['Roughness'].default_value=.48;hair.inputs['Radial Roughness'].default_value=.55;mul=n.new('ShaderNodeMixRGB');mul.blend_type='MULTIPLY';mul.inputs[0].default_value=1;mul.inputs[2].default_value=(.62,.62,.62,1);l.new(attr.outputs['Color'],mul.inputs[1]);l.new(mul.outputs[0],hair.inputs['Color']);l.new(hair.outputs[0],n.get('Material Output').inputs['Surface'])
 bpy.data.materials['Studio • warm gray'].node_tree.nodes.get('Principled BSDF').inputs['Emission Strength'].default_value=0
-s.world.node_tree.nodes.get('Background').inputs[1].default_value=.42
+s.world.node_tree.nodes.get('Background').inputs[1].default_value=.30
+bpy.data.lights['Fill • camera right'].energy=160
+bpy.data.lights['Soft frontal bounce'].energy=95
+s.view_settings.exposure=-.12
+if 'Tool attribution' in bpy.data.objects:bpy.data.objects['Tool attribution'].data.body='mcp-colabdev  /  Blender Cycles + OIDN'
 if a.view=='detail':
  from mathutils import Vector
  target=Vector((0,-.95,1.67));pos=Vector((.3,-6,1.97));s.camera.location=target+(pos-target)*4;s.camera.rotation_euler=(target-s.camera.location).to_track_quat('-Z','Y').to_euler();s.camera.data.ortho_scale=1.15

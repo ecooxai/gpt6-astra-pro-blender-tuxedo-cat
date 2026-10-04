@@ -1,37 +1,37 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 21:36 UTC",
-  "status": "Correcting eyelids and ear interiors; refining fine fur",
+  "updated": "2026-10-04 21:45 UTC",
+  "status": "Seventh refinement: ear roots, paws and optical shading",
   "progress": 50,
-  "iterations": 5,
+  "iterations": 6,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r05_front.png"
+      "file": "renders/r06_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r05_left.png"
+      "file": "renders/r06_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r05_right.png"
+      "file": "renders/r06_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r05_rear.png"
+      "file": "renders/r06_rear.png"
     }
   ],
   "files": [
     {
       "type": "BLEND",
       "name": "Full Blender scene",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149394242697407",
-      "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 56.8 MB.",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149784126244714",
+      "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 61.6 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend"
     },
     {
@@ -108,11 +108,19 @@
       "notes": "The analytic field removes stepped blaze boundaries and the web model compresses to about 2.2 MB. Close-up review finds eyelid annuli and ear interiors too bulky. This pass is rated below pass 4; the next pass reduces those forms and refines fur density and fiber length.",
       "score": 83,
       "image": "renders/r05_hero.png"
+    },
+    {
+      "step": "PASS 06",
+      "time": "21:45",
+      "title": "Fine native groom and corneal optics",
+      "notes": "Finer editable native fibers, narrower eyelids and real corneal reflections improve the face. Remaining issues: ear-root attachment, overlong paw fur, and excessive internal eye reflection under physical lighting. These are targeted in pass 7.",
+      "score": 86,
+      "image": "renders/r06_hero.png"
     }
   ],
-  "hero": "renders/r05_hero.png",
-  "score": 83,
+  "hero": "renders/r06_hero.png",
+  "score": 86,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
   "modelVersion": "1791149600986457953",
-  "viewSetRevision": 5
+  "viewSetRevision": 6
 }

@@ -39,13 +39,16 @@ tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs
 furmat=attrmat('02 • individually colored fibers',.76);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.13; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
 black=mat('03 • soft black cartilage',(.0032,.0038,.0047),.93)
 black.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.12
-rim=mat('04 • wet dark eyelid',(.013,.009,.006),.3)
+rim=mat('04 • wet dark eyelid',(.008,.007,.006),.58)
+rim.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
 nosemat=mat('05 • charcoal rose nose',(.010,.009,.011),.40)
 pink=mat('06 • muted warm ear interior',(.067,.039,.035),.92)
 white=mat('07 • warm ivory whiskers',(.83,.81,.73),.47)
-pupilmat=mat('08 • deep pupil',(.001,.0015,.0011),.1)
+pupilmat=mat('08 • deep pupil',(.00015,.0002,.00015),.95)
+pupilmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=0
 catchmat=mat('09 • corneal studio reflection',(.95,.98,1),.08);cb=catchmat.node_tree.nodes.get('Principled BSDF');cb.inputs['Emission Color'].default_value=(.7,.77,.8,1);cb.inputs['Emission Strength'].default_value=.4
-irisMat=attrmat('10 • radial golden iris fibers',.28)
+irisMat=attrmat('10 • radial golden iris fibers',.65)
+irisMat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.06
 fa=furmat.node_tree.nodes.new('ShaderNodeAttribute');fa.attribute_name='Coat';furmat.node_tree.links.new(fa.outputs['Color'],furmat.node_tree.nodes.get('Principled BSDF').inputs['Base Color'])
 parts=[]
 def ell(name,loc,scale,material=None,join=False,seg=48,rings=32):
@@ -78,8 +81,8 @@ def limb(name,rings):
  ff.extend([tuple(reversed(range(ns))),tuple((len(rings)-1)*ns+k for k in range(ns))])
  me=bpy.data.meshes.new(name);me.from_pydata(vv,[],ff);o=bpy.data.objects.new(name,me);root.objects.link(o);parts.append(o)
 for s in [-1,1]:
- x=s*.214
- limb('Continuous front leg '+str(s),[(x,-.58,1.12,.14,.16),(x,-.59,.94,.133,.153),(x,-.605,.76,.12,.137),(x,-.622,.57,.104,.12),(x,-.64,.38,.088,.105),(x,-.659,.19,.086,.109),(x,-.682,.105,.096,.122)])
+ x=s*.230
+ limb('Continuous front leg '+str(s),[(x,-.58,1.12,.14,.16),(x,-.59,.94,.133,.153),(x,-.605,.76,.12,.137),(x,-.622,.57,.104,.12),(x,-.64,.38,.097,.108),(x,-.659,.19,.093,.113),(x,-.682,.105,.096,.122)])
  ell('Front paw '+str(s),(x,-.736,.081),(.123,.163,.071),join=True)
  for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.861+abs(k-1.5)*.014,.066),(.037,.068,.049),join=True,seg=28,rings=20)
  ell('Hind haunch '+str(s),(s*.249,.646,.969),(.16,.231,.28),join=True)
@@ -142,7 +145,7 @@ for s in [-1,1]:
   for i in range(nu+1):
    u=i/nu;xx=.277+.008*math.sin(math.pi*v)+(u-.5)*span
    yy=-.806-.225*v+.012*math.cos((u-.5)*math.pi)
-   zz=1.884+.103*math.sin(math.pi*v*.87)-.037*v-.030*(2*u-1)**2
+   zz=1.884+.103*math.sin(math.pi*v*.87)-.037*v-.125*(2*u-1)**2*(1-v)
    vv.append((s*xx,yy,zz))
  for j in range(nv):
   for i in range(nu):
@@ -225,10 +228,10 @@ for s in [-1,1]:
   rr=random.Random(800+j);z=1.492+(j%4-1.5)*.022;xx=.091+(j//4)*.031;yy=-1.284+(j//4)*.017
   start=Vector((s*xx,yy,z));end=Vector((s*(.46+rr.random()*.14),-1.19+rr.uniform(-.19,.12),z+rr.uniform(-.15,.14)))
   mid=start.lerp(end,.48)+Vector((0,-.045,.026));pts=catmull([start,start.lerp(mid,.4),mid,end],5)
-  strand_curve('Mystacial whisker '+str(s)+'.'+str(j),pts,.0011+rr.random()*.0004,white)
+  strand_curve('Mystacial whisker '+str(s)+'.'+str(j),pts,.00065+rr.random()*.0003,white)
   ell('Whisker root '+str(s)+'.'+str(j),start,(.003,.002,.003),nosemat,seg=8,rings=6)
- for j in range(3):
-  start=Vector((s*(.135+j*.041),-1.12,1.83+j*.014));end=start+Vector((s*(.047+j*.033),-.045-j*.008,.106+j*.017));strand_curve('Brow whisker '+str(s)+'.'+str(j),catmull([start,start.lerp(end,.5)+Vector((0,-.025,.01)),end],7),.0009,white)
+ for j in range(5):
+  start=Vector((s*(.131+j*.025),-1.12,1.832+j*.010));end=start+Vector((s*(.03+j*.024),-.04-j*.008,.113+j*.008));strand_curve('Brow whisker '+str(s)+'.'+str(j),catmull([start,start.lerp(end,.5)+Vector((0,-.025,.01)),end],7),.00055,white)
 print('SCULPT_READY',len(body.data.vertices),'vertices',flush=True)
 nostrilmat=mat('Nose creases • soft charcoal',(.0012,.001,.001),.83)
 for side in [-1,1]:
@@ -245,7 +248,7 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
   if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.179)/.074)**2+((z-1.724)/.080)**2<1.03:continue
   if name.startswith('Lid groom') and ((abs(x)-.179)/.073)**2+((z-1.724)/.079)**2<1.0:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
-  if z<.031:continue
+  if z<.010 or (z<.033 and normal.z<-.35):continue
   if name.startswith('Lid groom'):direction=Vector((x-math.copysign(.179,x),-.01,z-1.724));length=.004+rng.random()*.004
   elif name.startswith('Inner ear'):direction=Vector((x*.7,-.4,1));length=.018+rng.random()*.029
   elif name.startswith('Ear groom'):direction=Vector((x*.8,-.2,.45));length=.012+rng.random()*.013
@@ -255,7 +258,8 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
    if y<-1.20:length*=.65;direction=Vector((x*3,0,-.2))
   elif z<.70:direction=Vector((0,-.07,-1));length=.019+rng.random()*.012
   else:direction=Vector((x*.8,.45,-.55));length=.027+rng.random()*.022
-  if rng.random()<.12:length*=1.35
+  if z<.22:length*=.16+.84*max(0,min(1,(z-.09)/.13))
+  if rng.random()<.12 and z>.2:length*=1.35
   length*=length_scale
   if name=='Body groom' and y<-.97 and z>1.57 and ((abs(x)-.179)/.16)**2+((z-1.724)/.16)**2<1.0:direction=Vector((x-math.copysign(.179,x),-.02,z-1.724))
   tangent=direction-normal*direction.dot(normal)
@@ -292,9 +296,17 @@ area('Coat edge • rear strip',(0,3.5,4.8),540,3.0,color=(1,1,.97))
 area('Soft frontal bounce',(0,-4.5,2.05),165,5.0,color=(1,.97,.92))
 bpy.data.lights['Soft frontal bounce'].use_shadow=False
 bpy.ops.object.camera_add();cam=bpy.context.object;cam.name='Studio camera';move(cam,studiocol);scene.camera=cam;cam.data.type='ORTHO';cam.data.lens=60;cam.data.clip_end=1500
+# Camera-space Blender text supplies attribution in the actual rendered files.
+creditmat=mat('Studio • attribution ink',(.035,.045,.039),1);credit_bs=creditmat.node_tree.nodes.get('Principled BSDF');credit_bs.inputs['Emission Color'].default_value=(.035,.045,.039,1);credit_bs.inputs['Emission Strength'].default_value=1
+creditmat.shadow_method='NONE';credits=[]
+for bodytext,tag in [('GPT-6 Astra Pro','Model attribution'),('mcp-colabdev  /  Blender EEVEE','Tool attribution')]:
+ font=bpy.data.curves.new(tag,'FONT');font.body=bodytext;font.align_x='LEFT';font.align_y='TOP_BASELINE';font.extrude=0;ob=bpy.data.objects.new(tag,font);studiocol.objects.link(ob);ob.parent=cam;font.materials.append(creditmat);credits.append(ob)
+ for attr in ['visible_shadow','visible_diffuse','visible_glossy','visible_transmission','visible_volume_scatter']:
+  if hasattr(ob,attr):setattr(ob,attr,False)
 views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13),2.86),'left':((-7,-.01,1.42),(0,.19,1.15),3.50),'right':((7,-.01,1.42),(0,.19,1.15),3.50),'rear':((0,7,1.42),(0,.20,1.12),2.92),'detail':((.9,-6,2.0),(0,-.95,1.68),1.12)}
 def setcam(v):
  pos,target,scale=views[v];target=Vector(target);pos=Vector(pos);cam.location=target+(pos-target)*4;cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
+ for i,label in enumerate(credits):label.location=(-scale*.445,scale*(.461-i*.028),-8);label.data.size=scale*(.021 if i==0 else .0105)
 setcam('hero');scene['author']='GPT-6 Astra Pro';scene['tools']='mcp-colabdev / Blender headless EEVEE';scene['revision']=a.revision;scene['assets']='All cat geometry, fibers and materials authored from scratch; reference inspection only.'
 blend=B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend';bpy.ops.wm.save_as_mainfile(filepath=str(blend),compress=True);print('SAVED_BLEND',str(blend),flush=True)
 for view in a.views.split(','):
