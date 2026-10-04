@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 export async function initViewer(el,url){
  const scene=new THREE.Scene();scene.background=new THREE.Color('#e8e9e5');
  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.shadowMap.autoUpdate=false;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;el.appendChild(renderer.domElement);
@@ -13,7 +14,7 @@ export async function initViewer(el,url){
  let model=null,dirty=true,visible=true,last=0,loadGeneration=0;
  function disposeModel(node){const geometries=new Set(),materials=new Set();node.traverse(o=>{if(o.isMesh){geometries.add(o.geometry);for(const m of [o.material].flat())materials.add(m)}});for(const g of geometries)g.dispose();for(const m of materials)m.dispose();}
 
- async function loadModel(source){const generation=++loadGeneration;const gltf=await new GLTFLoader().loadAsync(source);if(generation!==loadGeneration){disposeModel(gltf.scene);return;}gltf.scene.traverse(o=>{if(o.isMesh){const groom=o.name.toLowerCase().includes('groom');o.castShadow=!groom;o.receiveShadow=!groom;for(const m of [o.material].flat()){if(m.name.includes('coat')||m.name.includes('fibers')){m.roughness=.94;if('specularIntensity' in m)m.specularIntensity=.10}}}});if(model){scene.remove(model);disposeModel(model)}model=gltf.scene;scene.add(model);renderer.shadowMap.needsUpdate=true;dirty=true;if(window.catViewer)window.catViewer.model=model;}
+ async function loadModel(source){const generation=++loadGeneration;const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(source);if(generation!==loadGeneration){disposeModel(gltf.scene);return;}gltf.scene.traverse(o=>{if(o.isMesh){const groom=o.name.toLowerCase().includes('groom');o.castShadow=!groom;o.receiveShadow=!groom;for(const m of [o.material].flat()){if(m.name.includes('coat')||m.name.includes('fibers')){m.roughness=.94;if('specularIntensity' in m)m.specularIntensity=.10}}}});if(model){scene.remove(model);disposeModel(model)}model=gltf.scene;scene.add(model);renderer.shadowMap.needsUpdate=true;dirty=true;if(window.catViewer)window.catViewer.model=model;}
  try{await loadModel(url)}catch(error){renderer.dispose();renderer.domElement.remove();controls.dispose();throw error}controls.addEventListener('change',()=>dirty=true);new IntersectionObserver(v=>{visible=v[0].isIntersecting;if(visible)dirty=true}).observe(el);
  function resize(){const w=el.clientWidth,h=el.clientHeight;if(w&&h){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true;}}
  new ResizeObserver(resize).observe(el);resize();

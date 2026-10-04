@@ -4,7 +4,7 @@ from pathlib import Path
 from mathutils import Vector
 P=Path(__file__).resolve().parents[1];B=Path(os.environ.get('CAT_BUILD_DIR','/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat'))
 bpy.ops.wm.open_mainfile(filepath=str(B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend'))
-s=bpy.context.scene;s.eevee.use_ssr=True;s.eevee.use_ssr_refraction=True;s.eevee.taa_render_samples=20;s.render.resolution_x=800;s.render.resolution_y=800
+s=bpy.context.scene;s.eevee.use_ssr=True;s.eevee.use_ssr_refraction=True;s.eevee.taa_render_samples=8;s.render.resolution_x=512;s.render.resolution_y=512
 mat=bpy.data.materials.new('11 • clear corneal film');mat.use_nodes=True;bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(.98,.995,1,1);bs.inputs['Roughness'].default_value=.035;bs.inputs['IOR'].default_value=1.38;bs.inputs['Transmission Weight'].default_value=1;mat.blend_method='HASHED';mat.use_screen_refraction=True;mat.refraction_depth=.007;mat.shadow_method='NONE'
 root=bpy.data.collections['CAT • original geometry'];offset=s.get('ground_offset',0)
 for side in [-1,1]:
