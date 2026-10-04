@@ -1,0 +1,16 @@
+{
+  "name": "gpt-6-astra-pro_mcp-colabdev_blender_tuxedocat",
+  "version": "1.0.0",
+  "description": "Original procedural reconstruction from a supplied four-view reference. Blender 4.0.2, headless EEVEE, interactive Three.js preview. All character geometry and materials are authored in this project; no existing model/texture assets are used. See Agents.md for build instructions and review status.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "0.24.0",
+    "three": "0.170.0"
+  }
+}
