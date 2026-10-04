@@ -1,1 +1,40 @@
-{"project":"/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat","updated":"Initial setup","status":"Building original geometry","progress":20,"iterations":0,"views":[],"files":[],"journal":[{"step":"SETUP","title":"Reference inspected · Blender ready","notes":"Visually reviewed all four supplied views. Using original mesh, procedural markings and a strand groom. No downloaded model, texture, or animal asset is used."}]}
+{
+  "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
+  "updated": "2026-10-04 20:25 UTC",
+  "status": "Refining anatomy and facial likeness",
+  "progress": 50,
+  "iterations": 1,
+  "views": [
+    {
+      "id": "front",
+      "label": "Front view",
+      "file": "renders/r01_front.png"
+    }
+  ],
+  "files": [
+    {
+      "type": "PY",
+      "name": "Procedural build script",
+      "url": "downloads/build_cat.py",
+      "description": "Reconstructs the cat from original mathematical geometry.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/scripts/build_cat.py"
+    }
+  ],
+  "journal": [
+    {
+      "step": "SETUP",
+      "title": "Reference inspected \u00b7 Blender ready",
+      "notes": "Visually reviewed all four supplied views. Using original mesh, procedural markings and a strand groom. No downloaded model, texture, or animal asset is used."
+    },
+    {
+      "step": "PASS 01",
+      "time": "20:25",
+      "title": "First sculpt and coat review",
+      "notes": "Recognizable coat layout and raised tail. Eyes protrude, ear folds are too arched, black fur is too gray, and leg transitions look segmented. These are correction priorities, not a finished likeness.",
+      "score": 68,
+      "image": "renders/r01_hero.png"
+    }
+  ],
+  "hero": "renders/r01_hero.png",
+  "score": 68
+}

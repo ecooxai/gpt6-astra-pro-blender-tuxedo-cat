@@ -15,8 +15,8 @@ for d in bpy.data.materials:bpy.data.materials.remove(d)
 scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE';scene.eevee.taa_render_samples=a.samples;scene.eevee.use_gtao=True;scene.eevee.gtao_distance=.14;scene.eevee.gtao_factor=1.13;scene.eevee.use_soft_shadows=True
 scene.render.resolution_x=a.resolution;scene.render.resolution_y=a.resolution;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG';scene.render.film_transparent=False
-scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=.12
-scene.world.color=(.45,.45,.45);scene.world.use_nodes=True;scene.world.node_tree.nodes.get('Background').inputs[0].default_value=(.65,.69,.75,1);scene.world.node_tree.nodes.get('Background').inputs[1].default_value=.27
+scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=.35
+scene.world.color=(.45,.45,.45);scene.world.use_nodes=True;scene.world.node_tree.nodes.get('Background').inputs[0].default_value=(.65,.69,.75,1);scene.world.node_tree.nodes.get('Background').inputs[1].default_value=.32
 root=bpy.data.collections.new('CAT • original geometry');scene.collection.children.link(root)
 groomcol=bpy.data.collections.new('GROOM • authored strands');scene.collection.children.link(groomcol)
 studiocol=bpy.data.collections.new('STUDIO • camera and lights');scene.collection.children.link(studiocol)
@@ -28,9 +28,9 @@ def mat(name,c,rough=.5,metal=0):
 def attrmat(name,rough=.65):
  m=mat(name,(1,1,1),rough);n=m.node_tree.nodes;b=n.get('Principled BSDF');v=n.new('ShaderNodeVertexColor');v.layer_name='Coat';m.node_tree.links.new(v.outputs['Color'],b.inputs['Base Color']);return m
 coat=attrmat('01 • procedural black and warm-white coat',.8)
-n=coat.node_tree.nodes;b=n.get('Principled BSDF');b.inputs['Subsurface Weight'].default_value=.04;b.inputs['Subsurface Radius'].default_value=(.8,.5,.3);b.inputs['Sheen Weight'].default_value=.12; b.inputs['Specular IOR Level'].default_value=.20
-tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs['Detail'].default_value=2.3;bu=n.new('ShaderNodeBump');bu.inputs['Strength'].default_value=.16;bu.inputs['Distance'].default_value=.009;coat.node_tree.links.new(tex.outputs['Fac'],bu.inputs['Height']);coat.node_tree.links.new(bu.outputs['Normal'],b.inputs['Normal'])
-furmat=attrmat('02 • individually colored fibers',.78);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.13; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
+n=coat.node_tree.nodes;b=n.get('Principled BSDF');b.inputs['Subsurface Weight'].default_value=.04;b.inputs['Subsurface Radius'].default_value=(.8,.5,.3);b.inputs['Sheen Weight'].default_value=.2
+tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs['Detail'].default_value=2.3;bu=n.new('ShaderNodeBump');bu.inputs['Strength'].default_value=.25;bu.inputs['Distance'].default_value=.009;coat.node_tree.links.new(tex.outputs['Fac'],bu.inputs['Height']);coat.node_tree.links.new(bu.outputs['Normal'],b.inputs['Normal'])
+furmat=attrmat('02 • individually colored fibers',.78);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.35
 black=mat('03 • soft black cartilage',(.009,.011,.012),.71)
 rim=mat('04 • wet dark eyelid',(.013,.009,.006),.3)
 nosemat=mat('05 • charcoal rose nose',(.022,.012,.014),.36)
@@ -53,31 +53,25 @@ ell('Abdomen',(0,.38,1.055),(.32,.51,.34),join=True)
 ell('Pelvis',(0,.65,1.15),(.355,.36,.395),join=True)
 ell('Shoulders',(0,-.49,1.25),(.33,.37,.40),join=True)
 ell('Neck • chest ruff',(0,-.69,1.41),(.305,.31,.37),join=True)
-ell('Full white chest',(0,-.715,1.16),(.285,.291,.34),join=True)
 ell('Cranium',(0,-.88,1.70),(.35,.303,.292),join=True)
 ell('Brow',(0,-.978,1.79),(.31,.218,.18),join=True)
 for s in [-1,1]:
  ell('Cheek '+str(s),(s*.207,-.992,1.60),(.191,.229,.202),join=True)
  ell('Muzzle pillow '+str(s),(s*.101,-1.173,1.502),(.138,.139,.095),join=True)
 ell('Chin',(0,-1.118,1.412),(.192,.17,.079),join=True)
-def limb(name,rings):
- vv=[];ff=[];ns=24
- for j,(x,y,z,rx,ry) in enumerate(rings):
-  for k in range(ns):
-   t=k*2*math.pi/ns;vv.append((x+rx*math.cos(t),y+ry*math.sin(t),z))
-  if j:
-   for k in range(ns):ff.append(((j-1)*ns+k,(j-1)*ns+(k+1)%ns,j*ns+(k+1)%ns,j*ns+k))
- ff.extend([tuple(reversed(range(ns))),tuple((len(rings)-1)*ns+k for k in range(ns))])
- me=bpy.data.meshes.new(name);me.from_pydata(vv,[],ff);o=bpy.data.objects.new(name,me);root.objects.link(o);parts.append(o)
 for s in [-1,1]:
  x=s*.235
- limb('Continuous front leg '+str(s),[(x,-.58,1.12,.14,.16),(x,-.59,.94,.133,.153),(x,-.605,.76,.12,.137),(x,-.622,.57,.104,.12),(x,-.64,.38,.088,.105),(x,-.659,.19,.086,.109),(x,-.682,.105,.096,.122)])
- ell('Front paw '+str(s),(x,-.736,.081),(.123,.163,.071),join=True)
- for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.841+abs(k-1.5)*.01,.064),(.037,.064,.049),join=True,seg=28,rings=20)
- ell('Hind haunch '+str(s),(s*.249,.646,.969),(.16,.231,.28),join=True)
- limb('Continuous angular hind leg '+str(s),[(s*.254,.66,.96,.148,.178),(s*.261,.617,.77,.13,.162),(s*.265,.665,.60,.11,.128),(s*.262,.757,.42,.082,.089),(s*.258,.80,.25,.073,.079),(s*.258,.788,.11,.082,.098)])
- ell('Hind paw '+str(s),(s*.257,.715,.077),(.113,.16,.066),join=True)
- for k in range(4):ell('Rear toe '+str(s)+'.'+str(k),(s*.257+(k-1.5)*.047,.604+abs(k-1.5)*.011,.057),(.033,.065,.045),join=True,seg=24,rings=16)
+ ell('Front upper leg '+str(s),(x,-.575,.875),(.145,.17,.34),join=True)
+ ell('Front wrist '+str(s),(x,-.633,.382),(.083,.105,.305),join=True)
+ ell('Front pastern '+str(s),(x,-.669,.195),(.089,.117,.132),join=True)
+ ell('Front paw '+str(s),(x,-.726,.095),(.121,.159,.087),join=True)
+ for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.05,-.819+abs(k-1.5)*.012,.071),(.036,.071,.058),join=True,seg=24,rings=16)
+ # Visible hock angle: thigh down/forward, ankle back, foot flat.
+ ell('Hind thigh '+str(s),(s*.255,.625,.871),(.173,.244,.343),join=True)
+ o=ell('Hind shin '+str(s),(s*.254,.738,.533),(.095,.13,.27),join=True);o.rotation_euler.x=-.3
+ ell('Hind hock '+str(s),(s*.259,.819,.276),(.079,.081,.18),join=True)
+ ell('Hind paw '+str(s),(s*.257,.737,.089),(.111,.157,.081),join=True)
+ for k in range(4):ell('Rear toe '+str(s)+'.'+str(k),(s*.257+(k-1.5)*.047,.64+abs(k-1.5)*.011,.068),(.033,.065,.054),join=True,seg=24,rings=16)
 # Curved, full-bodied tail with smoothly varying circular sections.
 def catmull(ps,steps=9):
  ps=[Vector(p) for p in ps];out=[]
@@ -86,16 +80,16 @@ def catmull(ps,steps=9):
   for j in range(steps):
    t=j/steps;out.append(.5*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t*t+(-p0+3*p1-3*p2+p3)*t*t*t))
  out.append(ps[-1]);return out
-tailpath=catmull([(0,.83,1.27),(-.07,1.07,1.46),(-.21,1.31,1.69),(-.36,1.43,1.94),(-.42,1.41,2.14),(-.43,1.33,2.24)],10)
+tailpath=catmull([(0,.83,1.27),(0,1.07,1.45),(.015,1.34,1.62),(.04,1.52,1.85),(.035,1.57,2.10),(.015,1.52,2.23)],10)
 verts=[];faces=[];ns=20
 for i,p in enumerate(tailpath):
- tang=(tailpath[min(i+1,len(tailpath)-1)]-tailpath[max(0,i-1)]).normalized();u=Vector((1,0,0));v=tang.cross(u).normalized();t=i/(len(tailpath)-1);r=.106+.023*math.sin(math.pi*t)-.026*t**7
+ tang=(tailpath[min(i+1,len(tailpath)-1)]-tailpath[max(0,i-1)]).normalized();u=Vector((1,0,0));v=tang.cross(u).normalized();t=i/(len(tailpath)-1);r=.102+.023*math.sin(math.pi*t)-.04*t**7
  for j in range(ns):verts.append(p+r*(u*math.cos(j*2*math.pi/ns)+v*math.sin(j*2*math.pi/ns)))
  if i:
   for j in range(ns):faces.append(((i-1)*ns+j,(i-1)*ns+(j+1)%ns,i*ns+(j+1)%ns,i*ns+j))
 faces += [tuple(reversed(range(ns))),tuple((len(tailpath)-1)*ns+j for j in range(ns))]
 mesh=bpy.data.meshes.new('Tail swept topology');mesh.from_pydata(verts,[],faces);o=bpy.data.objects.new('Upright curved tail',mesh);root.objects.link(o);parts.append(o)
-ell('Tail rounded tip',tailpath[-1],(.082,.080,.084),join=True)
+ell('Tail rounded tip',tailpath[-1],(.065,.064,.075),join=True)
 bpy.ops.object.select_all(action='DESELECT')
 for o in parts:o.select_set(True)
 bpy.context.view_layer.objects.active=parts[0];bpy.ops.object.join();body=bpy.context.object;body.name='CAT • unified anatomical sculpt'
@@ -103,8 +97,6 @@ bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
 rem=body.modifiers.new('Continuous skin • voxel union','REMESH');rem.mode='VOXEL';rem.voxel_size=.014;rem.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=rem.name)
 sm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;bpy.ops.object.modifier_apply(modifier=sm.name)
 sub=body.modifiers.new('Skin surface subdivision','SUBSURF');sub.levels=1;bpy.ops.object.modifier_apply(modifier=sub.name)
-for v in body.data.vertices:
- if v.co.z<.062:v.co.z=max(.007,.010+(v.co.z-.013)*.7)
 body.data.materials.clear();body.data.materials.append(coat)
 for p in body.data.polygons:p.use_smooth=True
 # The reference markings are recreated analytically, never projected from an image.
@@ -114,17 +106,17 @@ def coatcolor(p):
  if y<-.69 and z>1.445:
   isblack=True
   if y<-1.04:
-   width=.005+.155*max(0,min(1,(1.945-z)/.43))**1.85
-   if ax<width+edge*.20 and z<1.935+edge*.25:isblack=False
-  if z<1.565-.025*min(1,ax/.3) and y<-.74:isblack=False
+   width=.022+.15*max(0,min(1,(1.87-z)/.43))**1.6
+   if ax<width+edge*.24:isblack=False
+  if z<1.515 and y<-1.05:isblack=False
  if y>-.58 and y<.92 and z>.73:
   shoulder=((y+.31)/.255)**2+((z-1.29)/.445)**2
   rump=((y-.59)/.263)**2+((z-1.27)/.322)**2
   if (shoulder<1+edge*7 or rump<1+edge*6) and (ax>.19+edge or z>1.365):isblack=True
-  if .2<y<.49 and .745<z<.81 and ax<.17:isblack=True
+  if .2<y<.49 and z<.81 and ax>.15:isblack=True
  if y>.60 and y<.92 and .32<z<.51 and x<-.13 and z+.035*noise(Vector(p)*32)>.335:isblack=True
- if y>.89 and z>1.37:isblack=True
- if isblack:return (.0032,.0038,.0047)
+ if y>1.00 and z>1.32:isblack=True
+ if isblack:return (.011,.013,.015)
  return (.80,.779,.715)
 def paint(o,fn):
  co=o.data.color_attributes.new(name='Coat',type='FLOAT_COLOR',domain='POINT')
@@ -135,11 +127,11 @@ ears=[]
 for s in [-1,1]:
  vv=[];ff=[];nu=14;nv=18
  for j in range(nv+1):
-  v=j/nv;span=.212*(1-.73*v**2)
+  v=j/nv;span=.235*(1-.59*v**2)
   for i in range(nu+1):
-   u=i/nu;xx=.287+(u-.5)*span+.018*math.sin(math.pi*v)
+   u=i/nu;xx=.267+(u-.5)*span+.031*math.sin(math.pi*v)
    yy=-.815-.215*v+.022*math.cos((u-.5)*math.pi)
-   zz=1.903+.076*math.sin(math.pi*v*.91)-.046*v-.032*(2*u-1)**2
+   zz=1.877+.137*math.sin(math.pi*v*.91)-.049*v-.052*(2*u-1)**2
    vv.append((s*xx,yy,zz))
  for j in range(nv):
   for i in range(nu):
@@ -149,18 +141,18 @@ for s in [-1,1]:
  su=o.modifiers.new('Rounded ear fold','SUBSURF');su.levels=2;bpy.ops.object.modifier_apply(modifier=su.name)
  for p in o.data.polygons:p.use_smooth=True
  ears.append(o)
- inn=ell('Subtle inner ear '+str(s),(s*.294,-.999,1.883),(.046,.012,.026),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
+ inn=ell('Subtle inner ear '+str(s),(s*.281,-.996,1.879),(.058,.014,.039),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
 # Eye construction uses an embedded dark limbus, curved radial iris, vertical pupil and explicit small reflections.
 for s in [-1,1]:
- theta=s*.205;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
- eye=ell('Eye socket '+str(s),C,(.081,.043,.086),rim,seg=64,rings=48);eye.rotation_euler.z=theta
- irisR=.0695;nr=22;nt=192;iv=[C+N*.052];ic=[(.36,.25,.04,1)];iff=[]
+ theta=s*.205;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.168,-1.157,1.712))
+ eye=ell('Eye socket '+str(s),C,(.105,.066,.113),rim,seg=64,rings=48);eye.rotation_euler.z=theta
+ irisR=.092;nr=22;nt=192;iv=[C+N*.076];ic=[(.36,.25,.04,1)];iff=[]
  for j in range(1,nr+1):
   r=j/nr
   for k in range(nt):
-   ang=2*math.pi*k/nt;xx=irisR*r*math.cos(ang);zz=irisR*1.075*r*math.sin(ang);d=.028+.024*math.sqrt(max(0,1-r*r));iv.append(C+U*xx+V*zz+N*d)
+   ang=2*math.pi*k/nt;xx=irisR*r*math.cos(ang);zz=irisR*1.075*r*math.sin(ang);d=.046+.031*math.sqrt(max(0,1-r*r));iv.append(C+U*xx+V*zz+N*d)
    rays=.5+.20*math.sin(ang*97+2.3*math.sin(ang*23)+r*7)+.15*math.sin(ang*173-r*12)+.12*math.sin(ang*51+r*20)
-   border=max(0,min(1,(1-r)/.055));inner=.7+.3*min(1,r/.35);col=(.35+.21*rays,.26+.17*rays,.025+.050*rays)
+   border=max(0,min(1,(1-r)/.055));inner=.7+.3*min(1,r/.35);col=(.58+.16*rays,.41+.17*rays,.065+.045*rays)
    ic.append(tuple(v*border*inner+.004*(1-border) for v in col)+(1,))
  for k in range(nt):iff.append((0,1+k,1+(k+1)%nt))
  for j in range(nr-1):
@@ -170,14 +162,14 @@ for s in [-1,1]:
  for i,c in enumerate(ic):co.data[i].color=c
  for po in me.polygons:po.use_smooth=True
  # Convex slit follows the front of the iris.
- pv=[C+N*.055];pf=[]
+ pv=[C+N*.080];pf=[]
  for k in range(96):
-  ang=k*math.pi*2/96;xx=.027*math.cos(ang);zz=.047*math.sin(ang);rr=(xx/irisR)**2+(zz/(irisR*1.075))**2;pv.append(C+U*xx+V*zz+N*(.031+.024*math.sqrt(max(0,1-rr))))
+  ang=k*math.pi*2/96;xx=.023*math.cos(ang);zz=.073*math.sin(ang);rr=(xx/irisR)**2+(zz/(irisR*1.075))**2;pv.append(C+U*xx+V*zz+N*(.049+.032*math.sqrt(max(0,1-rr))))
  for k in range(96):pf.append((0,k+1,(k+1)%96+1))
  me=bpy.data.meshes.new('Pupil slit');me.from_pydata(pv,[],pf);po=bpy.data.objects.new('Vertical pupil '+str(s),me);root.objects.link(po);me.materials.append(pupilmat)
  for poly in me.polygons:poly.use_smooth=True
- hi=ell('Softbox eye reflection '+str(s),C+U*(-.017)+V*.027+N*.053,(.009,.003,.012),catchmat,seg=32,rings=20);hi.rotation_euler.z=theta;hi.rotation_euler.y=-.25
- hi=ell('Secondary eye glint '+str(s),C+U*.021+V*(-.021)+N*.052,(.003,.002,.004),catchmat,seg=20,rings=12);hi.rotation_euler.z=theta
+ hi=ell('Softbox eye reflection '+str(s),C+U*(-.028)+V*.041+N*.076,(.017,.004,.022),catchmat,seg=32,rings=20);hi.rotation_euler.z=theta;hi.rotation_euler.y=-.25
+ hi=ell('Secondary eye glint '+str(s),C+U*.029+V*(-.027)+N*.076,(.006,.003,.009),catchmat,seg=20,rings=12);hi.rotation_euler.z=theta
 # Shaped nose, philtrum, lips and whisker follicles.
 vs=[(-.062,-1.299,1.555),(.062,-1.299,1.555),(.049,-1.34,1.548),(0,-1.352,1.508),(-.049,-1.34,1.548),(0,-1.282,1.513)]
 fs=[(0,1,2,4),(4,2,3),(0,4,3,5),(1,5,3,2),(0,5,1)]
@@ -190,14 +182,14 @@ def strand_curve(name,points,radius,material,col=root):
 strand_curve('Philtrum',[(0,-1.324,1.519),(0,-1.329,1.495),(0,-1.323,1.475)],.005,rim)
 for s in [-1,1]:
  strand_curve('Muzzle lip '+str(s),catmull([(0,-1.323,1.475),(s*.035,-1.307,1.462),(s*.091,-1.285,1.464),(s*.135,-1.248,1.487)],6),.003,rim)
- for j in range(10):
+ for j in range(12):
   rr=random.Random(800+j);z=1.492+(j%4-1.5)*.022;xx=.091+(j//4)*.031;yy=-1.284+(j//4)*.017
   start=Vector((s*xx,yy,z));end=Vector((s*(.46+rr.random()*.14),-1.19+rr.uniform(-.19,.12),z+rr.uniform(-.15,.14)))
   mid=start.lerp(end,.48)+Vector((0,-.045,.026));pts=catmull([start,start.lerp(mid,.4),mid,end],5)
   strand_curve('Mystacial whisker '+str(s)+'.'+str(j),pts,.0011+rr.random()*.0004,white)
   ell('Whisker root '+str(s)+'.'+str(j),start,(.003,.002,.003),nosemat,seg=8,rings=6)
- for j in range(3):
-  start=Vector((s*(.135+j*.041),-1.12,1.83+j*.014));end=start+Vector((s*(.047+j*.033),-.045-j*.008,.106+j*.017));strand_curve('Brow whisker '+str(s)+'.'+str(j),catmull([start,start.lerp(end,.5)+Vector((0,-.025,.01)),end],7),.0009,white)
+ for j in range(5):
+  start=Vector((s*(.139+j*.025),-1.127,1.821+j*.008));end=start+Vector((s*(.04+j*.024),-.02,.13+j*.013));strand_curve('Brow whisker '+str(s)+'.'+str(j),catmull([start,start.lerp(end,.5)+Vector((0,-.025,.01)),end],7),.0009,white)
 print('SCULPT_READY',len(body.data.vertices),'vertices',flush=True)
 # Deterministic surface-area strand sampling of ORIGINAL geometry, not image analysis.
 def groom_surface(obj,count,colorfn,name,length_scale=1):
@@ -207,25 +199,25 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  for h in range(count):
   tr=tris[bisect.bisect_left(cum,rng.random()*tot)];a0,b0,c0=[me.vertices[k] for k in tr.vertices];r1=math.sqrt(rng.random());r2=rng.random();weights=(1-r1,r1*(1-r2),r1*r2);p=M@(a0.co*weights[0]+b0.co*weights[1]+c0.co*weights[2]);normal=(R@(a0.normal*weights[0]+b0.normal*weights[1]+c0.normal*weights[2])).normalized();x,y,z=p
   # Keep the corneas and nose unobstructed.
-  if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.157)/.088)**2+((z-1.724)/.094)**2<1.04:continue
+  if name=='Body groom' and y<-1.09 and z>1.58 and ((abs(x)-.168)/.118)**2+((z-1.712)/.126)**2<1.05:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
   if z<.031:continue
   if y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028
   elif z>1.40 and y<-.75:
-   direction=Vector((x*2,.15,-.65));length=(.027+rng.random()*.023) if z<1.59 else (.014+rng.random()*.012)
+   direction=Vector((x*2,.15,-.65));length=.014+rng.random()*.014
    if y<-1.20:length*=.65;direction=Vector((x*3,0,-.2))
   elif z<.70:direction=Vector((0,-.07,-1));length=.014+rng.random()*.014
-  else:direction=Vector((x*.8,.45,-.55));length=.042+rng.random()*.031
+  else:direction=Vector((x*.8,.45,-.55));length=.035+rng.random()*.030
   length*=length_scale
   tangent=direction-normal*direction.dot(normal)
   if tangent.length<.01:tangent=normal.cross(Vector((.3,.9,.4)))
   tangent.normalize();jitter=Vector((rng.uniform(-1,1),rng.uniform(-1,1),rng.uniform(-1,1)))*.16
   axis=(normal*.53+tangent*.79+jitter).normalized();u=axis.cross(Vector((.12,.13,1)))
   if u.length<.01:u=axis.cross(Vector((1,0,0)))
-  u.normalize();v=axis.cross(u).normalized();col=colorfn(p);variation=rng.uniform(.73,1.17);col=tuple(min(.95,c*variation) for c in col);radius=rng.uniform(.00072,.00130)*length_scale
+  u.normalize();v=axis.cross(u).normalized();col=colorfn(p);variation=rng.uniform(.73,1.17);col=tuple(min(.95,c*variation) for c in col);radius=rng.uniform(.00065,.00125)*length_scale
   base=len(vs)
   for j,t in enumerate([0,.36,.72,1]):
-   cp=p+normal*(length*(.44*t-.15*t*t))+tangent*(length*.88*t)+jitter*(length*t*t)
+   cp=p+normal*(length*(.31*t-.11*t*t))+tangent*(length*.88*t)+jitter*(length*t*t)
    width=radius*(1-.9*t)
    for k in range(3):
     ang=k*2*math.pi/3;vs.append(cp+(u*math.cos(ang)+v*math.sin(ang))*width);cols.append((*col,1))
@@ -236,10 +228,9 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  ob['requested_strands']=count;ob['actual_strands']=len(vs)//12
  print('GROOM_READY',name,len(vs)//12,flush=True);return ob
 hair=groom_surface(body,a.fur,coatcolor,'Body groom')
-for o in ears:groom_surface(o,1700,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.52)
+for o in ears:groom_surface(o,1700,lambda p:(.01,.012,.014),'Ear groom '+o.name,.52)
 # Studio is purpose-built; no HDRI or backdrop image.
 floor=mat('Studio • warm gray',(.64,.66,.635),.88)
-fb=floor.node_tree.nodes.get('Principled BSDF');fb.inputs['Emission Color'].default_value=(.64,.66,.635,1);fb.inputs['Emission Strength'].default_value=.65
 bpy.ops.mesh.primitive_plane_add(size=200,location=(0,0,-.006));o=bpy.context.object;o.name='Studio ground';o.data.materials.append(floor);move(o,studiocol)
 def area(name,loc,power,size,target=(0,0,1),color=(1,1,1)):
  d=bpy.data.lights.new(name,'AREA');d.energy=power;d.shape='DISK';d.size=size;d.color=color;o=bpy.data.objects.new(name,d);studiocol.objects.link(o);o.location=loc;o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
@@ -247,7 +238,7 @@ area('Large softbox • camera left',(-3,-4.5,6),550,4.0,color=(1,.94,.86))
 area('Fill • camera right',(3,-2.0,3.8),340,3.0,color=(.88,.93,1))
 area('Coat edge • rear strip',(0,3.5,4.8),650,3.0,color=(1,1,.97))
 bpy.ops.object.camera_add();cam=bpy.context.object;cam.name='Studio camera';move(cam,studiocol);scene.camera=cam;cam.data.type='ORTHO';cam.data.lens=60;cam.data.clip_end=250
-views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13),2.86),'left':((-7,-.01,1.42),(0,.19,1.15),3.50),'right':((7,-.01,1.42),(0,.19,1.15),3.50),'rear':((0,7,1.42),(0,.20,1.12),2.92)}
+views={'hero':((3.2,-5.7,2.65),(0,.19,1.13),3.45),'front':((0,-7,2.0),(0,.1,1.13),2.86),'left':((-7,-.01,2.15),(0,.19,1.15),3.50),'right':((7,-.01,2.15),(0,.19,1.15),3.50),'rear':((0,7,2.05),(0,.20,1.12),2.92)}
 def setcam(v):
  pos,target,scale=views[v];cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
 setcam('hero');scene['author']='GPT-6 Astra Pro';scene['tools']='mcp-colabdev / Blender headless EEVEE';scene['revision']=a.revision;scene['assets']='All cat geometry, fibers and materials authored from scratch; reference inspection only.'
