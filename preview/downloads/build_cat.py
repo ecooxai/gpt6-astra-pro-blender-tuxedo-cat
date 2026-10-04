@@ -7,6 +7,10 @@ from pathlib import Path
 from mathutils import Vector
 from mathutils.noise import noise_vector, noise
 P=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(P/'scripts'))
+from coat_field import coat_color, install_coat_shader
+(P/'preview/renders').mkdir(parents=True,exist_ok=True)
+(P/'preview/downloads').mkdir(parents=True,exist_ok=True)
 B=Path(os.environ.get('CAT_BUILD_DIR','/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat'));B.mkdir(parents=True,exist_ok=True)
 parser=argparse.ArgumentParser();parser.add_argument('--revision',type=int,default=1);parser.add_argument('--fur',type=int,default=65000);parser.add_argument('--resolution',type=int,default=900);parser.add_argument('--views',default='hero,front,left,right,rear');parser.add_argument('--samples',type=int,default=40)
 a=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
@@ -118,39 +122,24 @@ body.data.update()
 body.data.materials.clear();body.data.materials.append(coat)
 for p in body.data.polygons:p.use_smooth=True
 # The reference markings are recreated analytically, never projected from an image.
-def coatcolor(p):
- x,y,z=p;ax=abs(x);edge=.025*noise(Vector((x*31,y*31,z*31)))+.011*math.sin(y*70+z*59)
- isblack=False
- if ((y+.965)/.485)**2+((z-1.745)/.36)**2<1+edge*2.5 and z>1.48:
-  isblack=True
-  if y<-1.04:
-   width=.005+.155*max(0,min(1,(1.945-z)/.43))**1.85
-   if ax<width+edge*.20 and z<1.935+edge*.25:isblack=False
-  if z<1.555-.021*min(1,ax/.3)+.032*max(0,min(1,(-y-.9)/.38))+edge*.65 and y<-.73:isblack=False
- if y>-.58 and y<.92 and z>.73:
-  shoulder=((y+.31)/.255)**2+((z-1.29)/.445)**2
-  rump=((y-.59)/.263)**2+((z-1.27)/.322)**2
-  if (shoulder<1+edge*7 or rump<1+edge*6) and (ax>.19+edge or z>1.365):isblack=True
-  if .2<y<.49 and .745<z<.81 and ax<.17:isblack=True
- if x<-.13 and ((y-.766)/.118)**2+((z-.405)/.112)**2<1+edge*4.5:isblack=True
- if y>.86 and z>1.34+edge*.5:isblack=True
- if y>.80 and ((x+.022)/.152)**2+((z-1.37)/.19)**2<1+edge*4:isblack=True
- if isblack:return (.0032,.0038,.0047)
- return (.80,.779,.715)
+coatcolor=coat_color
 def paint(o,fn):
  co=o.data.color_attributes.new(name='Coat',type='FLOAT_COLOR',domain='POINT')
- for i,v in enumerate(o.data.vertices):co.data[i].color=(*fn(o.matrix_world@v.co),1)
+ pos=o.data.attributes.new(name='CoatPosition',type='FLOAT_VECTOR',domain='POINT')
+ for i,v in enumerate(o.data.vertices):
+  pp=o.matrix_world@v.co;co.data[i].color=(*fn(pp),1);pos.data[i].vector=pp
 paint(body,coatcolor)
+install_coat_shader(coat)
 # Folded ears: the cartilage travels up, rolls forward and turns down into a rounded tip.
 ears=[];inner_ears=[]
 for s in [-1,1]:
  vv=[];ff=[];nu=14;nv=18
  for j in range(nv+1):
-  v=j/nv;span=.222*max(.045,1-.99*v**1.3)
+  v=j/nv;span=.220*max(.035,1-.98*v)
   for i in range(nu+1):
-   u=i/nu;xx=.274+.065*v+(u-.5)*span
-   yy=-.815-.215*v+.022*math.cos((u-.5)*math.pi)
-   zz=1.900+.080*math.sin(math.pi*v)-.035*v-.020*v**3-.030*(2*u-1)**2
+   u=i/nu;xx=.288+.012*math.sin(math.pi*v)+(u-.5)*span
+   yy=-.806-.225*v+.012*math.cos((u-.5)*math.pi)
+   zz=1.884+.128*math.sin(math.pi*v*.87)-.037*v-.030*(2*u-1)**2
    vv.append((s*xx,yy,zz))
  for j in range(nv):
   for i in range(nu):
@@ -160,11 +149,24 @@ for s in [-1,1]:
  su=o.modifiers.new('Rounded ear fold','SUBSURF');su.levels=2;bpy.ops.object.modifier_apply(modifier=su.name)
  for p in o.data.polygons:p.use_smooth=True
  ears.append(o)
- inn=ell('Subtle inner ear '+str(s),(s*.292,-.991,1.883),(.055,.012,.033),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45;inner_ears.append(inn)
+ ev=[(s*.289,-.961,1.898)];ef=[];en=64;er=8
+ for j in range(1,er+1):
+  r=j/er
+  for k in range(en):
+   t=k*2*math.pi/en;ev.append((s*.289+.054*r*math.cos(t),-.986+.025*(1-r*r),1.898+.052*r*math.sin(t)))
+ for k in range(en):ef.append((0,1+k,1+(k+1)%en))
+ for j in range(er-1):
+  for k in range(en):
+   q=1+j*en+k;nq=1+j*en+(k+1)%en;ef.append((q,nq,nq+en,q+en))
+ em=bpy.data.meshes.new('Concave ear bowl '+str(s));em.from_pydata(ev,[],ef);em.update();inn=bpy.data.objects.new('Subtle inner ear '+str(s),em);root.objects.link(inn);em.materials.append(pink);em.materials.append(black)
+ for poly in em.polygons:poly.use_smooth=True
+ wall=inn.modifiers.new('Soft cartilage wall','SOLIDIFY');wall.thickness=.003;wall.material_offset=1;wall.material_offset_rim=1;inner_ears.append(inn)
 # Eye construction uses an embedded dark limbus, curved radial iris, vertical pupil and explicit small reflections.
+from mathutils.bvhtree import BVHTree
+_body_bvh=BVHTree.FromObject(body,bpy.context.evaluated_depsgraph_get());eye_lids=[]
 for s in [-1,1]:
  theta=s*.43;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
- eye=ell('Eye socket '+str(s),C,(.076,.041,.081),rim,seg=64,rings=48);eye.rotation_euler.z=theta
+ eye=ell('Eye socket '+str(s),C,(.075,.032,.079),rim,seg=64,rings=48);eye.rotation_euler.z=theta
  irisR=.0695;nr=22;nt=192;iv=[C+N*.052];ic=[(.36,.25,.04,1)];iff=[]
  for j in range(1,nr+1):
   r=j/nr
@@ -189,6 +191,21 @@ for s in [-1,1]:
  for poly in me.polygons:poly.use_smooth=True
  hi=ell('Softbox eye reflection '+str(s),C+U*(-.017)+V*.027+N*.053,(.009,.003,.012),catchmat,seg=32,rings=20);hi.rotation_euler.z=theta;hi.rotation_euler.y=-.25
  hi=ell('Secondary eye glint '+str(s),C+U*.021+V*(-.021)+N*.052,(.003,.002,.004),catchmat,seg=20,rings=12);hi.rotation_euler.z=theta
+# Annular eyelid tissue joins the corneal margin to the actual sculpt surface.
+ lv=[];lf=[];ln=96;lr=5
+ for j in range(lr+1):
+  w=j/lr;ease=w*w*(3-2*w)
+  for k in range(ln):
+   ang=k*2*math.pi/ln;inner=C+U*(.0725*math.cos(ang))+V*(.0785*math.sin(ang))+N*.029
+   projected=C+U*(.106*math.cos(ang))+V*(.112*math.sin(ang));hit=_body_bvh.ray_cast(projected+N*.4,-N,1.0)[0]
+   if hit is None:hit=projected-N*.025
+   lv.append(inner.lerp(hit,ease)+N*(.0035*math.sin(math.pi*w)))
+ for j in range(lr):
+  for k in range(ln):
+   q=j*ln+k;nq=j*ln+(k+1)%ln;lf.append((q,nq,nq+ln,q+ln))
+ lm=bpy.data.meshes.new('Anatomical eyelid transition '+str(s));lm.from_pydata(lv,[],lf);lm.update();lid=bpy.data.objects.new('Sculpted eyelids '+str(s),lm);root.objects.link(lid);lm.materials.append(rim);lm.materials.append(coat)
+ for i,poly in enumerate(lm.polygons):poly.use_smooth=True;poly.material_index=0 if i<ln else 1
+ paint(lid,coatcolor);sub=lid.modifiers.new('Soft eyelid tissue','SUBSURF');sub.levels=1;eye_lids.append(lid)
 # Shaped nose, philtrum, lips and whisker follicles.
 vs=[(-.062,-1.299,1.555),(.062,-1.299,1.555),(.049,-1.34,1.548),(0,-1.352,1.508),(-.049,-1.34,1.548),(0,-1.282,1.513)]
 fs=[(0,1,2,4),(4,2,3),(0,4,3,5),(1,5,3,2),(0,5,1)]
@@ -198,9 +215,9 @@ def strand_curve(name,points,radius,material,col=root):
  cu=bpy.data.curves.new(name,'CURVE');cu.dimensions='3D';cu.resolution_u=2;cu.bevel_depth=radius;cu.bevel_resolution=2;sp=cu.splines.new('POLY');sp.points.add(len(points)-1)
  for i,p in enumerate(points):sp.points[i].co=(*p,1);sp.points[i].radius=max(.12,(1-i/(len(points)-1))**.6)
  ob=bpy.data.objects.new(name,cu);col.objects.link(ob);cu.materials.append(material);return ob
-strand_curve('Philtrum',[(0,-1.324,1.519),(0,-1.329,1.495),(0,-1.323,1.475)],.005,rim)
+strand_curve('Philtrum',[(0,-1.324,1.519),(0,-1.329,1.495),(0,-1.323,1.475)],.003,rim)
 for s in [-1,1]:
- strand_curve('Muzzle lip '+str(s),catmull([(0,-1.323,1.475),(s*.035,-1.307,1.462),(s*.091,-1.285,1.464),(s*.135,-1.248,1.487)],6),.003,rim)
+ strand_curve('Muzzle lip '+str(s),catmull([(0,-1.323,1.475),(s*.035,-1.307,1.462),(s*.091,-1.285,1.464),(s*.135,-1.248,1.487)],6),.0016,rim)
  for j in range(10):
   rr=random.Random(800+j);z=1.492+(j%4-1.5)*.022;xx=.091+(j//4)*.031;yy=-1.284+(j//4)*.017
   start=Vector((s*xx,yy,z));end=Vector((s*(.46+rr.random()*.14),-1.19+rr.uniform(-.19,.12),z+rr.uniform(-.15,.14)))
@@ -210,6 +227,10 @@ for s in [-1,1]:
  for j in range(3):
   start=Vector((s*(.135+j*.041),-1.12,1.83+j*.014));end=start+Vector((s*(.047+j*.033),-.045-j*.008,.106+j*.017));strand_curve('Brow whisker '+str(s)+'.'+str(j),catmull([start,start.lerp(end,.5)+Vector((0,-.025,.01)),end],7),.0009,white)
 print('SCULPT_READY',len(body.data.vertices),'vertices',flush=True)
+nostrilmat=mat('Nose creases • soft charcoal',(.0012,.001,.001),.83)
+for side in [-1,1]:
+ nostril=ell('Nostril '+str(side),(side*.035,-1.339,1.538),(.011,.004,.0055),nostrilmat,seg=24,rings=16);nostril.rotation_euler.y=side*.24
+nb=nosemat.node_tree.nodes;nt=nb.new('ShaderNodeTexNoise');nt.inputs['Scale'].default_value=95;nt.inputs['Detail'].default_value=2;np=nb.new('ShaderNodeBump');np.inputs['Strength'].default_value=.10;np.inputs['Distance'].default_value=.0015;nosemat.node_tree.links.new(nt.outputs['Fac'],np.inputs['Height']);nosemat.node_tree.links.new(np.outputs['Normal'],nb.get('Principled BSDF').inputs['Normal'])
 # Deterministic surface-area strand sampling of ORIGINAL geometry, not image analysis.
 def groom_surface(obj,count,colorfn,name,length_scale=1):
  me=obj.data;me.calc_loop_triangles();tris=list(me.loop_triangles);cum=[];tot=0
@@ -219,9 +240,11 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
   tr=tris[bisect.bisect_left(cum,rng.random()*tot)];a0,b0,c0=[me.vertices[k] for k in tr.vertices];r1=math.sqrt(rng.random());r2=rng.random();weights=(1-r1,r1*(1-r2),r1*r2);p=M@(a0.co*weights[0]+b0.co*weights[1]+c0.co*weights[2]);normal=(R@(a0.normal*weights[0]+b0.normal*weights[1]+c0.normal*weights[2])).normalized();x,y,z=p
   # Keep the corneas and nose unobstructed.
   if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.174)/.087)**2+((z-1.724)/.091)**2<1.04:continue
+  if name.startswith('Lid groom') and ((abs(x)-.179)/.079)**2+((z-1.724)/.085)**2<1.0:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
   if z<.031:continue
-  if name.startswith('Inner ear'):direction=Vector((x*.7,-.4,1));length=.018+rng.random()*.029
+  if name.startswith('Lid groom'):direction=Vector((x-math.copysign(.179,x),-.01,z-1.724));length=.006+rng.random()*.006
+  elif name.startswith('Inner ear'):direction=Vector((x*.7,-.4,1));length=.018+rng.random()*.029
   elif name.startswith('Ear groom'):direction=Vector((x*.8,-.2,.45));length=.023+rng.random()*.016
   elif y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028
   elif z>1.40 and y<-.75:
@@ -250,7 +273,8 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  print('GROOM_READY',name,len(vs)//12,flush=True);return ob
 hair=groom_surface(body,a.fur,coatcolor,'Body groom')
 for o in ears:groom_surface(o,3000,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.86)
-for o in inner_ears:groom_surface(o,210,lambda p:(.36,.29,.235),'Inner ear groom '+o.name,.66)
+for o in inner_ears:groom_surface(o,360,lambda p:(.26,.225,.20),'Inner ear groom '+o.name,.66)
+for o in eye_lids:groom_surface(o,1600,coatcolor,'Lid groom '+o.name,.72)
 # Put the lowest original skin point on the studio plane without altering coat coordinates.
 ground_offset=min((body.matrix_world@v.co).z for v in body.data.vertices)
 for col in [root,groomcol]:

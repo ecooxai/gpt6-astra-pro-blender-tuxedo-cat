@@ -1,45 +1,52 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 21:15 UTC",
-  "status": "Refining close-up anatomy and procedural markings",
+  "updated": "2026-10-04 21:36 UTC",
+  "status": "Correcting eyelids and ear interiors; refining fine fur",
   "progress": 50,
-  "iterations": 4,
+  "iterations": 5,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r04_front.png"
+      "file": "renders/r05_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r04_left.png"
+      "file": "renders/r05_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r04_right.png"
+      "file": "renders/r05_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r04_rear.png"
+      "file": "renders/r05_rear.png"
     }
   ],
   "files": [
     {
       "type": "BLEND",
       "name": "Full Blender scene",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791147374189565892",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149394242697407",
       "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 56.8 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend"
     },
     {
       "type": "GLB",
       "name": "Interactive 3D model",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791147418005444183",
-      "description": "Optimized original geometry and vertex colors for interactive web viewing. 13.1 MB.",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791149600263458875",
+      "description": "Optimized original geometry and vertex colors for interactive web viewing. 13.4 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb"
+    },
+    {
+      "type": "PY",
+      "name": "Procedural coat field",
+      "url": "downloads/coat_field.py",
+      "description": "Companion module: original continuous black-and-white coat mathematics.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/scripts/coat_field.py"
     },
     {
       "type": "PY",
@@ -93,11 +100,19 @@
       "notes": "Closed body, matching paw heights, 108344 authored fibers, and six Eevee views. Close-up review identifies stepped blaze edges, exposed dark eye rims, and ear-fold shape as remaining likeness issues. Curve-fur experiments remain separate, not silently substituted for the approved scene.",
       "score": 84,
       "image": "renders/r04_hero.png"
+    },
+    {
+      "step": "PASS 05",
+      "time": "21:36",
+      "title": "Continuous coat pigment; facial regression identified",
+      "notes": "The analytic field removes stepped blaze boundaries and the web model compresses to about 2.2 MB. Close-up review finds eyelid annuli and ear interiors too bulky. This pass is rated below pass 4; the next pass reduces those forms and refines fur density and fiber length.",
+      "score": 83,
+      "image": "renders/r05_hero.png"
     }
   ],
-  "hero": "renders/r04_hero.png",
-  "score": 84,
-  "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb",
-  "modelVersion": "1791147418005444183",
-  "viewSetRevision": 4
+  "hero": "renders/r05_hero.png",
+  "score": 83,
+  "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
+  "modelVersion": "1791149600986457953",
+  "viewSetRevision": 5
 }

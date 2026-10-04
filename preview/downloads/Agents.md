@@ -4,7 +4,7 @@
 - Project: `/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat`
 - Build directory: `/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat`
 - Preview: project `preview/`, served on port **8794**.
-- Live tunnel: https://virtually-homework-arranged-suggests.trycloudflare.com
+- Live tunnel: https://stable-know-groups-subdivision.trycloudflare.com
 - GitHub: https://github.com/ecooxai/gpt6-astra-pro-blender-tuxedo-cat
 - GitHub Pages: https://ecooxai.github.io/gpt6-astra-pro-blender-tuxedo-cat/
 - Branch: `GPT-6-Astra-Pro_mcp-colabdev_blender-cat`
@@ -54,3 +54,6 @@ The user requested at least **20,000** build-preview iterations and a score abov
 - Tests: `scripts/test_preview.py`; logs and screenshots are in `logs/` and `preview/renders/`.
 - Renders use `rNN_view.png`; obsolete large multiview sets may be archived, retaining honest review evidence.
 - Never publish font files, credentials, environment files, unrelated project content, or large base64 output.
+
+## Recovery checkpoint
+Colab disconnected during pass-5 review. Restart restored an older home snapshot. Recovered committed pass-4 files from GitHub commit 7840de7; earlier local restored changes are preserved in a Git stash. Reconstructed the uncommitted continuous coat-field / anatomical eyelid refinement from its authored source. Terminal is now 1637 (`cat-studio-recovered`). New tunnel URL above; port remains 8794. Only four main model passes have been visually reviewed; latest score 84/100. Pass 5 is rebuilding, not yet reviewed.
