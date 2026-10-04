@@ -59,6 +59,8 @@ for ob in exports:
  ob.select_set(True)
 bpy.context.view_layer.objects.active=exports[0];bpy.ops.object.convert(target='MESH')
 out=P/'preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb'
-bpy.ops.export_scene.gltf(filepath=str(out),export_format='GLB',use_selection=True,export_apply=True,export_cameras=False,export_lights=False,export_yup=True,export_extras=True)
+pending=out.with_name('.'+out.stem+'.pending.glb')
+bpy.ops.export_scene.gltf(filepath=str(pending),export_format='GLB',use_selection=True,export_apply=True,export_cameras=False,export_lights=False,export_yup=True,export_extras=True)
+os.replace(pending,out)
 report={'revision':bpy.context.scene.get('revision'),'bytes':out.stat().st_size,'objects':len(exports),'web_strands':sum(ob.get('web_strands',0) for ob in exports),'notes':'Portable approximation: sampled original pigment, reduced strand density, and small eye reflection meshes; full analytic shader, corneal optics and native groom are preserved in Blender.'}
 (P/'logs/export-report.json').write_text(json.dumps(report,indent=2));print('GLB_EXPORTED',str(out),out.stat().st_size,flush=True)

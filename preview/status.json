@@ -1,9 +1,9 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 21:45 UTC",
-  "status": "Seventh refinement: ear roots, paws and optical shading",
+  "updated": "2026-10-04 21:50 UTC",
+  "status": "Eighth refinement: scalp-anchored folds and finer fur shading",
   "progress": 50,
-  "iterations": 6,
+  "iterations": 7,
   "views": [
     {
       "id": "front",
@@ -116,10 +116,18 @@
       "notes": "Finer editable native fibers, narrower eyelids and real corneal reflections improve the face. Remaining issues: ear-root attachment, overlong paw fur, and excessive internal eye reflection under physical lighting. These are targeted in pass 7.",
       "score": 86,
       "image": "renders/r06_hero.png"
+    },
+    {
+      "step": "PASS 07",
+      "time": "21:50",
+      "title": "Cleaner optical shading; ear-root regression identified",
+      "notes": "Pupils no longer add their own glossy reflections, paw fur is shorter, and rendered attribution is included. The attempted lower ear roots create drooping outer edges, so this pass is rated slightly below pass 6. Replacing the ear patch with scalp-anchored folded triangles.",
+      "score": 85,
+      "image": "renders/r07_hero.png"
     }
   ],
-  "hero": "renders/r06_hero.png",
-  "score": 86,
+  "hero": "renders/r07_hero.png",
+  "score": 85,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
   "modelVersion": "1791149600986457953",
   "viewSetRevision": 6
