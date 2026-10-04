@@ -1,7 +1,7 @@
 """Export an independent, lower-density, vertex-colored GLB. Never overwrite the full groom .blend."""
-import bpy,sys,math,time
+import bpy,sys,math,time,os
 from pathlib import Path
-P=Path(__file__).resolve().parents[1];B=Path('/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat')
+P=Path(__file__).resolve().parents[1];B=Path(os.environ.get('CAT_BUILD_DIR','/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat'))
 bpy.ops.wm.open_mainfile(filepath=str(B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend'))
 bpy.ops.object.select_all(action='DESELECT');exports=[]
 for colname in ['CAT • original geometry','GROOM • authored strands']:

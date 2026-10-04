@@ -7,7 +7,7 @@ from pathlib import Path
 from mathutils import Vector
 from mathutils.noise import noise_vector, noise
 P=Path(__file__).resolve().parents[1]
-B=Path('/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat');B.mkdir(parents=True,exist_ok=True)
+B=Path(os.environ.get('CAT_BUILD_DIR','/build/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat'));B.mkdir(parents=True,exist_ok=True)
 parser=argparse.ArgumentParser();parser.add_argument('--revision',type=int,default=1);parser.add_argument('--fur',type=int,default=65000);parser.add_argument('--resolution',type=int,default=900);parser.add_argument('--views',default='hero,front,left,right,rear');parser.add_argument('--samples',type=int,default=40)
 a=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 random.seed(71);t0=time.time();bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
@@ -111,7 +111,7 @@ for p in body.data.polygons:p.use_smooth=True
 def coatcolor(p):
  x,y,z=p;ax=abs(x);edge=.025*noise(Vector((x*31,y*31,z*31)))+.011*math.sin(y*70+z*59)
  isblack=False
- if y<-.69 and z>1.445:
+ if ((y+.965)/.485)**2+((z-1.745)/.36)**2<1+edge*2.5 and z>1.48:
   isblack=True
   if y<-1.04:
    width=.005+.155*max(0,min(1,(1.945-z)/.43))**1.85
@@ -152,7 +152,7 @@ for s in [-1,1]:
  inn=ell('Subtle inner ear '+str(s),(s*.294,-.999,1.883),(.046,.012,.026),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
 # Eye construction uses an embedded dark limbus, curved radial iris, vertical pupil and explicit small reflections.
 for s in [-1,1]:
- theta=s*.205;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
+ theta=s*.43;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
  eye=ell('Eye socket '+str(s),C,(.081,.043,.086),rim,seg=64,rings=48);eye.rotation_euler.z=theta
  irisR=.0695;nr=22;nt=192;iv=[C+N*.052];ic=[(.36,.25,.04,1)];iff=[]
  for j in range(1,nr+1):
@@ -251,7 +251,7 @@ views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13
 def setcam(v):
  pos,target,scale=views[v];cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
 setcam('hero');scene['author']='GPT-6 Astra Pro';scene['tools']='mcp-colabdev / Blender headless EEVEE';scene['revision']=a.revision;scene['assets']='All cat geometry, fibers and materials authored from scratch; reference inspection only.'
-blend=B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend';bpy.ops.wm.save_as_mainfile(filepath=str(blend));print('SAVED_BLEND',str(blend),flush=True)
+blend=B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend';bpy.ops.wm.save_as_mainfile(filepath=str(blend),compress=True);print('SAVED_BLEND',str(blend),flush=True)
 for view in a.views.split(','):
  setcam(view);out=P/'preview'/'renders'/('r%02d_%s.png'%(a.revision,view));scene.render.filepath=str(out);bpy.ops.render.render(write_still=True);print('RENDER_DONE',view,str(out),round(time.time()-t0,1),flush=True)
-setcam('hero');bpy.ops.wm.save_as_mainfile(filepath=str(blend));print('BUILD_COMPLETE',round(time.time()-t0,1),flush=True)
+setcam('hero');bpy.ops.wm.save_as_mainfile(filepath=str(blend),compress=True);print('BUILD_COMPLETE',round(time.time()-t0,1),flush=True)

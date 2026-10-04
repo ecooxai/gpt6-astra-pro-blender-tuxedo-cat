@@ -1,7 +1,7 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 20:25 UTC",
-  "status": "Refining anatomy and facial likeness",
+  "updated": "2026-10-04 20:30 UTC",
+  "status": "Rendering corrected second iteration",
   "progress": 50,
   "iterations": 1,
   "views": [
@@ -9,6 +9,21 @@
       "id": "front",
       "label": "Front view",
       "file": "renders/r01_front.png"
+    },
+    {
+      "id": "left",
+      "label": "Left profile",
+      "file": "renders/r01_left.png"
+    },
+    {
+      "id": "right",
+      "label": "Right profile",
+      "file": "renders/r01_right.png"
+    },
+    {
+      "id": "rear",
+      "label": "Rear view",
+      "file": "renders/r01_rear.png"
     }
   ],
   "files": [
@@ -18,6 +33,13 @@
       "url": "downloads/build_cat.py",
       "description": "Reconstructs the cat from original mathematical geometry.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/scripts/build_cat.py"
+    },
+    {
+      "type": "MD",
+      "name": "Agent handoff",
+      "url": "downloads/Agents.md",
+      "description": "Exact paths, commands, limitations and completed review history.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/Agents.md"
     }
   ],
   "journal": [
@@ -28,9 +50,9 @@
     },
     {
       "step": "PASS 01",
-      "time": "20:25",
-      "title": "First sculpt and coat review",
-      "notes": "Recognizable coat layout and raised tail. Eyes protrude, ear folds are too arched, black fur is too gray, and leg transitions look segmented. These are correction priorities, not a finished likeness.",
+      "time": "20:30",
+      "title": "First sculpt and multiview review",
+      "notes": "Coat layout and raised tail recognizable. Correcting protruding eyes, arched ears, gray blacks, segmented legs, and the rectangular cap boundary visible in profile.",
       "score": 68,
       "image": "renders/r01_hero.png"
     }
