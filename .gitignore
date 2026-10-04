@@ -1,0 +1,5 @@
+reference/
+logs/
+*.blend1
+node_modules/
+__pycache__/
