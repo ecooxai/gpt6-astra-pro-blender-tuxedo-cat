@@ -1,0 +1,22 @@
+from pathlib import Path
+p=Path(__file__).with_name('build_cat.py');s=p.read_text()
+def rep(a,b):
+ global s
+ assert a in s,a[:110];s=s.replace(a,b)
+rep("black=mat('03 • soft black cartilage',(.009,.011,.012),.71)","black=mat('03 • soft black cartilage',(.0032,.0038,.0047),.93)\nblack.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.12")
+rep("pink=mat('06 • muted warm ear interior',(.135,.075,.067),.7)","pink=mat('06 • muted warm ear interior',(.067,.039,.035),.92)")
+rep("sm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;bpy.ops.object.modifier_apply(modifier=sm.name)","vg=body.vertex_groups.new(name='Preserve small toe contours')\nfor v in body.data.vertices:vg.add([v.index],.18 if v.co.z<.19 else 1.0,'REPLACE')\nsm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;sm.vertex_group=vg.name;bpy.ops.object.modifier_apply(modifier=sm.name)")
+rep("if z<1.565-.025*min(1,ax/.3) and y<-.74:isblack=False", "if z<1.555-.021*min(1,ax/.3)+.032*max(0,min(1,(-y-.9)/.38))+edge*.65 and y<-.73:isblack=False")
+rep("if y>.60 and y<.92 and .32<z<.51 and x<-.13 and z+.035*noise(Vector(p)*32)>.335:isblack=True", "if x<-.13 and ((y-.766)/.118)**2+((z-.405)/.112)**2<1+edge*4.5:isblack=True")
+rep("if y>.89 and z>1.37:isblack=True", "if y>.86 and z>1.34+edge*.5:isblack=True\n if y>.80 and ((x+.022)/.152)**2+((z-1.37)/.19)**2<1+edge*4:isblack=True")
+rep("ears=[]\nfor s", "ears=[];inner_ears=[]\nfor s")
+rep("inn.rotation_euler.y=s*.45", "inn.rotation_euler.y=s*.45;inner_ears.append(inn)")
+rep("xx=.027*math.cos(ang);zz=.047*math.sin(ang)", "xx=.030*math.cos(ang);zz=.048*math.sin(ang)")
+rep("if y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028", "if name.startswith('Inner ear'):direction=Vector((x*.7,-.4,1));length=.018+rng.random()*.029\n  elif name.startswith('Ear groom'):direction=Vector((x*.8,-.2,.45));length=.023+rng.random()*.016\n  elif y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028")
+rep("for o in ears:groom_surface(o,1700,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.52)","for o in ears:groom_surface(o,3000,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.86)\nfor o in inner_ears:groom_surface(o,210,lambda p:(.36,.29,.235),'Inner ear groom '+o.name,.66)\n# Put the lowest original skin point on the studio plane without altering coat coordinates.\nground_offset=min((body.matrix_world@v.co).z for v in body.data.vertices)\nfor col in [root,groomcol]:\n for ob in col.objects:ob.location.z-=ground_offset\nscene['ground_offset']=ground_offset")
+rep("fb.inputs['Emission Strength'].default_value=.65", "fb.inputs['Emission Strength'].default_value=1.04")
+rep("primitive_plane_add(size=200,location=(0,0,-.006))", "primitive_plane_add(size=1000,location=(0,0,0))")
+rep("cam.data.clip_end=250", "cam.data.clip_end=1500")
+rep("'rear':((0,7,1.42),(0,.20,1.12),2.92)}", "'rear':((0,7,1.42),(0,.20,1.12),2.92),'detail':((.9,-6,2.0),(0,-.95,1.68),1.12)}")
+rep("pos,target,scale=views[v];cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale", "pos,target,scale=views[v];target=Vector(target);pos=Vector(pos);cam.location=target+(pos-target)*4;cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale")
+p.write_text(s);print('REVISION_04_APPLIED')

@@ -16,11 +16,13 @@ with sync_playwright() as p:
   results['view_controls']=len(status.get('views',[]))
   page.locator('#renderMode').click()
  if status.get('model'):
-  page.locator('#orbitMode').click();page.wait_for_function('window.catViewer !== undefined',timeout=120000);page.wait_for_timeout(2000)
+  load_started=time.perf_counter();page.locator('#orbitMode').click();page.wait_for_function('window.catViewer !== undefined',timeout=120000);page.wait_for_timeout(2000)
   page.wait_for_function('catViewer.renderer.info.render.triangles > 0',timeout=120000)
+  results['model_load_seconds']=round(time.perf_counter()-load_started,2)
+  f0=page.evaluate('catViewer.renderer.info.render.frame');page.wait_for_timeout(1000);results['idle_extra_frames']=page.evaluate('catViewer.renderer.info.render.frame')-f0
   results['webgl_meshes']=page.evaluate('(()=>{let n=0;catViewer.scene.traverse(o=>{if(o.isMesh)n++});return n})()');results['webgl_triangles']=page.evaluate('catViewer.renderer.info.render.triangles')
   page.screenshot(path=str(P/'preview/renders/webgl-ui.png'),full_page=False,timeout=120000,animations='disabled')
-  b=page.locator('#webgl').bounding_box();page.mouse.move(b['x']+b['width']*.6,b['y']+b['height']*.5);page.mouse.down();page.mouse.move(b['x']+b['width']*.25,b['y']+b['height']*.5,steps=12);page.mouse.up();page.wait_for_timeout(500);results['orbit_drag']=True
+  before=page.evaluate('catViewer.camera.position.toArray()');b=page.locator('#webgl').bounding_box();page.mouse.move(b['x']+b['width']*.6,b['y']+b['height']*.5);page.mouse.down();page.mouse.move(b['x']+b['width']*.25,b['y']+b['height']*.5,steps=12);page.mouse.up();page.wait_for_timeout(500);after=page.evaluate('catViewer.camera.position.toArray()');results['orbit_drag']=sum((x-y)**2 for x,y in zip(before,after))>.001;assert results['orbit_drag']
   page.locator('#renderMode').click();results['render_switchback']=page.locator('#hero').is_visible()
  for width,height in [(390,844),(768,1024)]:
   page.set_viewport_size({'width':width,'height':height});page.goto(target,wait_until='networkidle');page.wait_for_timeout(800);results[f'overflow_{width}']=page.evaluate('document.documentElement.scrollWidth > innerWidth');page.screenshot(path=str(P/f'preview/renders/ui-{width}.png'),full_page=True,timeout=120000,animations='disabled')

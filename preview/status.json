@@ -1,29 +1,29 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 20:43 UTC",
-  "status": "Refining facial anatomy and paw details",
+  "updated": "2026-10-04 20:54 UTC",
+  "status": "Fourth refinement: ears, paws and studio framing",
   "progress": 50,
-  "iterations": 2,
+  "iterations": 3,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r02_front.png"
+      "file": "renders/r03_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r02_left.png"
+      "file": "renders/r03_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r02_right.png"
+      "file": "renders/r03_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r02_rear.png"
+      "file": "renders/r03_rear.png"
     }
   ],
   "files": [
@@ -77,10 +77,19 @@
       "notes": "Better legs, tail position and coat contrast. Smaller eyes are partly occluded by cheeks; the next pass carves anatomical eye sockets, tapers ear folds, separates toes and softens the under-chin lighting.",
       "score": 74,
       "image": "renders/r02_hero.png"
+    },
+    {
+      "step": "PASS 03",
+      "time": "20:54",
+      "title": "Natural eye sockets and soft facial lighting",
+      "notes": "Eyes now fully visible and integrated. Closed body mesh, finite vertices, matching left/right paw heights. Remaining priorities: furry ear interiors, toe definition, organic tail-root/ankle markings, exact ground contact, and orthographic floor-edge artifacts.",
+      "score": 82,
+      "image": "renders/r03_hero.png"
     }
   ],
-  "hero": "renders/r02_hero.png",
-  "score": 74,
+  "hero": "renders/r03_hero.png",
+  "score": 82,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb",
-  "modelVersion": "1791146207481293741"
+  "modelVersion": "1791146207481293741",
+  "viewSetRevision": 3
 }

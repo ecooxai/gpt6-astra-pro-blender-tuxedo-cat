@@ -31,10 +31,11 @@ coat=attrmat('01 • procedural black and warm-white coat',.8)
 n=coat.node_tree.nodes;b=n.get('Principled BSDF');b.inputs['Subsurface Weight'].default_value=.04;b.inputs['Subsurface Radius'].default_value=(.8,.5,.3);b.inputs['Sheen Weight'].default_value=.12; b.inputs['Specular IOR Level'].default_value=.20
 tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs['Detail'].default_value=2.3;bu=n.new('ShaderNodeBump');bu.inputs['Strength'].default_value=.16;bu.inputs['Distance'].default_value=.009;coat.node_tree.links.new(tex.outputs['Fac'],bu.inputs['Height']);coat.node_tree.links.new(bu.outputs['Normal'],b.inputs['Normal'])
 furmat=attrmat('02 • individually colored fibers',.78);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.13; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
-black=mat('03 • soft black cartilage',(.009,.011,.012),.71)
+black=mat('03 • soft black cartilage',(.0032,.0038,.0047),.93)
+black.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.12
 rim=mat('04 • wet dark eyelid',(.013,.009,.006),.3)
 nosemat=mat('05 • charcoal rose nose',(.022,.012,.014),.36)
-pink=mat('06 • muted warm ear interior',(.135,.075,.067),.7)
+pink=mat('06 • muted warm ear interior',(.067,.039,.035),.92)
 white=mat('07 • warm ivory whiskers',(.83,.81,.73),.47)
 pupilmat=mat('08 • deep pupil',(.001,.0015,.0011),.1)
 catchmat=mat('09 • corneal studio reflection',(.95,.98,1),.08);cb=catchmat.node_tree.nodes.get('Principled BSDF');cb.inputs['Emission Color'].default_value=(.7,.77,.8,1);cb.inputs['Emission Strength'].default_value=.4
@@ -101,7 +102,9 @@ for o in parts:o.select_set(True)
 bpy.context.view_layer.objects.active=parts[0];bpy.ops.object.join();body=bpy.context.object;body.name='CAT • unified anatomical sculpt'
 bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
 rem=body.modifiers.new('Continuous skin • voxel union','REMESH');rem.mode='VOXEL';rem.voxel_size=.012;rem.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=rem.name)
-sm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;bpy.ops.object.modifier_apply(modifier=sm.name)
+vg=body.vertex_groups.new(name='Preserve small toe contours')
+for v in body.data.vertices:vg.add([v.index],.18 if v.co.z<.19 else 1.0,'REPLACE')
+sm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;sm.vertex_group=vg.name;bpy.ops.object.modifier_apply(modifier=sm.name)
 sub=body.modifiers.new('Skin surface subdivision','SUBSURF');sub.levels=1;bpy.ops.object.modifier_apply(modifier=sub.name)
 # Anatomical eye sockets blend the eyelid into the cheek, rather than placing eyes on top.
 for v in body.data.vertices:
@@ -123,14 +126,15 @@ def coatcolor(p):
   if y<-1.04:
    width=.005+.155*max(0,min(1,(1.945-z)/.43))**1.85
    if ax<width+edge*.20 and z<1.935+edge*.25:isblack=False
-  if z<1.565-.025*min(1,ax/.3) and y<-.74:isblack=False
+  if z<1.555-.021*min(1,ax/.3)+.032*max(0,min(1,(-y-.9)/.38))+edge*.65 and y<-.73:isblack=False
  if y>-.58 and y<.92 and z>.73:
   shoulder=((y+.31)/.255)**2+((z-1.29)/.445)**2
   rump=((y-.59)/.263)**2+((z-1.27)/.322)**2
   if (shoulder<1+edge*7 or rump<1+edge*6) and (ax>.19+edge or z>1.365):isblack=True
   if .2<y<.49 and .745<z<.81 and ax<.17:isblack=True
- if y>.60 and y<.92 and .32<z<.51 and x<-.13 and z+.035*noise(Vector(p)*32)>.335:isblack=True
- if y>.89 and z>1.37:isblack=True
+ if x<-.13 and ((y-.766)/.118)**2+((z-.405)/.112)**2<1+edge*4.5:isblack=True
+ if y>.86 and z>1.34+edge*.5:isblack=True
+ if y>.80 and ((x+.022)/.152)**2+((z-1.37)/.19)**2<1+edge*4:isblack=True
  if isblack:return (.0032,.0038,.0047)
  return (.80,.779,.715)
 def paint(o,fn):
@@ -138,7 +142,7 @@ def paint(o,fn):
  for i,v in enumerate(o.data.vertices):co.data[i].color=(*fn(o.matrix_world@v.co),1)
 paint(body,coatcolor)
 # Folded ears: the cartilage travels up, rolls forward and turns down into a rounded tip.
-ears=[]
+ears=[];inner_ears=[]
 for s in [-1,1]:
  vv=[];ff=[];nu=14;nv=18
  for j in range(nv+1):
@@ -156,7 +160,7 @@ for s in [-1,1]:
  su=o.modifiers.new('Rounded ear fold','SUBSURF');su.levels=2;bpy.ops.object.modifier_apply(modifier=su.name)
  for p in o.data.polygons:p.use_smooth=True
  ears.append(o)
- inn=ell('Subtle inner ear '+str(s),(s*.292,-.991,1.883),(.055,.012,.033),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
+ inn=ell('Subtle inner ear '+str(s),(s*.292,-.991,1.883),(.055,.012,.033),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45;inner_ears.append(inn)
 # Eye construction uses an embedded dark limbus, curved radial iris, vertical pupil and explicit small reflections.
 for s in [-1,1]:
  theta=s*.43;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
@@ -179,7 +183,7 @@ for s in [-1,1]:
  # Convex slit follows the front of the iris.
  pv=[C+N*.055];pf=[]
  for k in range(96):
-  ang=k*math.pi*2/96;xx=.027*math.cos(ang);zz=.047*math.sin(ang);rr=(xx/irisR)**2+(zz/(irisR*1.075))**2;pv.append(C+U*xx+V*zz+N*(.031+.024*math.sqrt(max(0,1-rr))))
+  ang=k*math.pi*2/96;xx=.030*math.cos(ang);zz=.048*math.sin(ang);rr=(xx/irisR)**2+(zz/(irisR*1.075))**2;pv.append(C+U*xx+V*zz+N*(.031+.024*math.sqrt(max(0,1-rr))))
  for k in range(96):pf.append((0,k+1,(k+1)%96+1))
  me=bpy.data.meshes.new('Pupil slit');me.from_pydata(pv,[],pf);po=bpy.data.objects.new('Vertical pupil '+str(s),me);root.objects.link(po);me.materials.append(pupilmat)
  for poly in me.polygons:poly.use_smooth=True
@@ -217,7 +221,9 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
   if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.174)/.087)**2+((z-1.724)/.091)**2<1.04:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
   if z<.031:continue
-  if y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028
+  if name.startswith('Inner ear'):direction=Vector((x*.7,-.4,1));length=.018+rng.random()*.029
+  elif name.startswith('Ear groom'):direction=Vector((x*.8,-.2,.45));length=.023+rng.random()*.016
+  elif y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028
   elif z>1.40 and y<-.75:
    direction=Vector((x*2,.15,-.65));length=(.027+rng.random()*.023) if z<1.59 else (.014+rng.random()*.012)
    if y<-1.20:length*=.65;direction=Vector((x*3,0,-.2))
@@ -243,12 +249,18 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  ob['requested_strands']=count;ob['actual_strands']=len(vs)//12
  print('GROOM_READY',name,len(vs)//12,flush=True);return ob
 hair=groom_surface(body,a.fur,coatcolor,'Body groom')
-for o in ears:groom_surface(o,1700,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.52)
+for o in ears:groom_surface(o,3000,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.86)
+for o in inner_ears:groom_surface(o,210,lambda p:(.36,.29,.235),'Inner ear groom '+o.name,.66)
+# Put the lowest original skin point on the studio plane without altering coat coordinates.
+ground_offset=min((body.matrix_world@v.co).z for v in body.data.vertices)
+for col in [root,groomcol]:
+ for ob in col.objects:ob.location.z-=ground_offset
+scene['ground_offset']=ground_offset
 furmat.shadow_method='NONE'
 # Studio is purpose-built; no HDRI or backdrop image.
 floor=mat('Studio • warm gray',(.64,.66,.635),.88)
-fb=floor.node_tree.nodes.get('Principled BSDF');fb.inputs['Emission Color'].default_value=(.64,.66,.635,1);fb.inputs['Emission Strength'].default_value=.65
-bpy.ops.mesh.primitive_plane_add(size=200,location=(0,0,-.006));o=bpy.context.object;o.name='Studio ground';o.data.materials.append(floor);move(o,studiocol)
+fb=floor.node_tree.nodes.get('Principled BSDF');fb.inputs['Emission Color'].default_value=(.64,.66,.635,1);fb.inputs['Emission Strength'].default_value=1.04
+bpy.ops.mesh.primitive_plane_add(size=1000,location=(0,0,0));o=bpy.context.object;o.name='Studio ground';o.data.materials.append(floor);move(o,studiocol)
 def area(name,loc,power,size,target=(0,0,1),color=(1,1,1)):
  d=bpy.data.lights.new(name,'AREA');d.energy=power;d.shape='DISK';d.size=size;d.color=color;o=bpy.data.objects.new(name,d);studiocol.objects.link(o);o.location=loc;o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
 area('Large softbox • camera left',(-3,-4.5,6),550,4.0,color=(1,.94,.86))
@@ -256,10 +268,10 @@ area('Fill • camera right',(3,-2.0,3.8),340,3.0,color=(.88,.93,1))
 area('Coat edge • rear strip',(0,3.5,4.8),540,3.0,color=(1,1,.97))
 area('Soft frontal bounce',(0,-4.5,2.05),165,5.0,color=(1,.97,.92))
 bpy.data.lights['Soft frontal bounce'].use_shadow=False
-bpy.ops.object.camera_add();cam=bpy.context.object;cam.name='Studio camera';move(cam,studiocol);scene.camera=cam;cam.data.type='ORTHO';cam.data.lens=60;cam.data.clip_end=250
-views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13),2.86),'left':((-7,-.01,1.42),(0,.19,1.15),3.50),'right':((7,-.01,1.42),(0,.19,1.15),3.50),'rear':((0,7,1.42),(0,.20,1.12),2.92)}
+bpy.ops.object.camera_add();cam=bpy.context.object;cam.name='Studio camera';move(cam,studiocol);scene.camera=cam;cam.data.type='ORTHO';cam.data.lens=60;cam.data.clip_end=1500
+views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13),2.86),'left':((-7,-.01,1.42),(0,.19,1.15),3.50),'right':((7,-.01,1.42),(0,.19,1.15),3.50),'rear':((0,7,1.42),(0,.20,1.12),2.92),'detail':((.9,-6,2.0),(0,-.95,1.68),1.12)}
 def setcam(v):
- pos,target,scale=views[v];cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
+ pos,target,scale=views[v];target=Vector(target);pos=Vector(pos);cam.location=target+(pos-target)*4;cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
 setcam('hero');scene['author']='GPT-6 Astra Pro';scene['tools']='mcp-colabdev / Blender headless EEVEE';scene['revision']=a.revision;scene['assets']='All cat geometry, fibers and materials authored from scratch; reference inspection only.'
 blend=B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend';bpy.ops.wm.save_as_mainfile(filepath=str(blend),compress=True);print('SAVED_BLEND',str(blend),flush=True)
 for view in a.views.split(','):

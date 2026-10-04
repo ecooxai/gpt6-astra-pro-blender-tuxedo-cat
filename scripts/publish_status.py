@@ -9,7 +9,7 @@ views=[]
 for v,title in [('front','Front view'),('left','Left profile'),('right','Right profile'),('rear','Rear view')]:
  f=f'renders/r{args.revision:02}_{v}.png'
  if (Q/f).exists():views.append(dict(id=v,label=title,file=f))
-if views:d['views']=views
+if len(views)==4:d['views']=views;d['viewSetRevision']=args.revision
 if args.score is not None:
  d['score']=args.score;d['iterations']=args.revision
  entry=dict(step=f'PASS {args.revision:02}',time=datetime.datetime.now().strftime('%H:%M'),title=args.title,notes=args.notes,score=args.score,image=hero)
@@ -24,3 +24,9 @@ for typ,fn,title,desc in [('PY','build_cat.py','Procedural build script','Recons
 d['files']=files
 if (Q/'downloads'/(name+'.glb')).exists():d['model']='downloads/'+name+'.glb';d['modelVersion']=str((Q/'downloads'/(name+'.glb')).stat().st_mtime_ns)
 tmp=Q/'status.tmp';tmp.write_text(json.dumps(d,indent=2));os.replace(tmp,Q/'status.json');print(json.dumps({'status':d['status'],'score':d.get('score'),'views':len(d.get('views',[])),'files':len(files)}))
+
+# An explicit archive exposes every generated PNG with its actual absolute path.
+imgs=list((Q/'renders').glob('*.png'))
+imgs.sort(key=lambda f:(not f.name.startswith('r'),-f.stat().st_mtime))
+manifest=[dict(file=f.name,modified=f.stat().st_mtime_ns,kind='Blender EEVEE' if f.name.startswith('r') else 'Browser QA capture',kb=round(f.stat().st_size/1024),path=str(f)) for f in imgs]
+(Q/'renders/manifest.json').write_text(json.dumps(manifest,indent=2))
