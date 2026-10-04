@@ -8,9 +8,9 @@ for colname in ['CAT • original geometry','GROOM • authored strands']:
  for src in list(bpy.data.collections[colname].objects):
   ob=src.copy();ob.data=src.data.copy();bpy.context.scene.collection.objects.link(ob);exports.append(ob)
   if 'groom' in ob.name.lower() and ob.type=='MESH':
-   # Every fourth actual strand retained as complete tapered triangles.
+   # Every twelfth actual strand retained as complete tapered triangles.
    old=ob.data;vv=[];ff=[];colors=[];att=old.color_attributes.get('Coat');n=len(old.vertices)//12
-   for h in range(0,n,4):
+   for h in range(0,n,12):
     base=len(vv)
     for j in range(12):vv.append(old.vertices[h*12+j].co.copy());colors.extend(att.data[h*12+j].color)
     for j in range(1,4):
@@ -21,7 +21,7 @@ for colname in ['CAT • original geometry','GROOM • authored strands']:
    for p in me.polygons:p.use_smooth=True
    ob.data=me
   elif 'unified anatomical' in ob.name:
-   bpy.context.view_layer.objects.active=ob;ob.select_set(True);mod=ob.modifiers.new('Web silhouette-preserving reduction','DECIMATE');mod.ratio=.44;bpy.ops.object.modifier_apply(modifier=mod.name);ob.select_set(False)
+   bpy.context.view_layer.objects.active=ob;ob.select_set(True);mod=ob.modifiers.new('Web silhouette-preserving reduction','DECIMATE');mod.ratio=.24;bpy.ops.object.modifier_apply(modifier=mod.name);ob.select_set(False)
 for ob in exports:ob.select_set(True)
 bpy.context.view_layer.objects.active=exports[0];bpy.ops.object.convert(target='MESH')
 out=P/'preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb'

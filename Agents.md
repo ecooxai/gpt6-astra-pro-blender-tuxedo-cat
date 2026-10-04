@@ -35,8 +35,12 @@ For an independent machine, Blender 4.0.2 and a working OpenGL/Xvfb setup are re
 ## Completed visual reviews
 1. **68/100**, first full original sculpt and coat. Coat layout and raised tail recognizable. Eyes too protruding and too large; ears too arched; legs segmented; black fur rendered too gray; cap boundary rectangular in profile.
 
+2. **74/100**, continuous limbs, darker coat, better tail. Eye occlusion by cheek geometry remains; correcting sockets and ear/toe detail. The web model was reduced from 24.4 MB to 11.0 MB and the viewer now renders on demand.
+
 ## Work in progress
-Revision 2 applies a continuous limb loft, smaller embedded eyes, a rounder pupil, flatter ear folds, an organic cap boundary, darker low-specular black coat, longer chest grooming, better tail placement, and brighter studio lighting. It is queued after revision 1 finishes all views. Inspect `logs/build_r01.log`, `logs/build_r02.log`, and the corresponding PID files before continuing. Review score must be assigned only after viewing the actual new renders.
+Revision 3 is queued (`logs/build_r03.log`, `logs/build_r03.pid`) after the fast pass-2 set. It sculpts orbital depressions, reduces cheek bulging, tapers ear tips, separates toes, and adds shadowless frontal fill.
+
+Revision 2 applied a continuous limb loft, smaller embedded eyes, a rounder pupil, flatter ear folds, an organic cap boundary, darker low-specular black coat, longer chest grooming, better tail placement, and brighter studio lighting. It is queued after revision 1 finishes all views. Inspect `logs/build_r01.log`, `logs/build_r02.log`, and the corresponding PID files before continuing. Review score must be assigned only after viewing the actual new renders.
 
 ## Honesty / target
 The user requested at least **20,000** build-preview iterations and a score above **95/100**. Neither requirement has been met at this handoff state. The live journal records real completed reviews and self-assessed visual scores, not independent evaluation. Do not report a target score as an achieved result.

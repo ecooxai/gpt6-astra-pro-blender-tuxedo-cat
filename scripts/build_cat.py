@@ -12,7 +12,7 @@ parser=argparse.ArgumentParser();parser.add_argument('--revision',type=int,defau
 a=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 random.seed(71);t0=time.time();bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 for d in bpy.data.materials:bpy.data.materials.remove(d)
-scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE';scene.eevee.taa_render_samples=a.samples;scene.eevee.use_gtao=True;scene.eevee.gtao_distance=.14;scene.eevee.gtao_factor=1.13;scene.eevee.use_soft_shadows=True
+scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE';scene.eevee.taa_render_samples=a.samples;scene.eevee.use_gtao=True;scene.eevee.gtao_distance=.14;scene.eevee.gtao_factor=.88;scene.eevee.use_soft_shadows=True
 scene.render.resolution_x=a.resolution;scene.render.resolution_y=a.resolution;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG';scene.render.film_transparent=False
 scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=.12
@@ -53,11 +53,11 @@ ell('Abdomen',(0,.38,1.055),(.32,.51,.34),join=True)
 ell('Pelvis',(0,.65,1.15),(.355,.36,.395),join=True)
 ell('Shoulders',(0,-.49,1.25),(.33,.37,.40),join=True)
 ell('Neck • chest ruff',(0,-.69,1.41),(.305,.31,.37),join=True)
-ell('Full white chest',(0,-.715,1.16),(.285,.291,.34),join=True)
+ell('Full white chest',(0,-.705,1.18),(.255,.244,.365),join=True)
 ell('Cranium',(0,-.88,1.70),(.35,.303,.292),join=True)
 ell('Brow',(0,-.978,1.79),(.31,.218,.18),join=True)
 for s in [-1,1]:
- ell('Cheek '+str(s),(s*.207,-.992,1.60),(.191,.229,.202),join=True)
+ ell('Cheek '+str(s),(s*.195,-.990,1.60),(.173,.207,.187),join=True)
  ell('Muzzle pillow '+str(s),(s*.101,-1.173,1.502),(.138,.139,.095),join=True)
 ell('Chin',(0,-1.118,1.412),(.192,.17,.079),join=True)
 def limb(name,rings):
@@ -70,10 +70,10 @@ def limb(name,rings):
  ff.extend([tuple(reversed(range(ns))),tuple((len(rings)-1)*ns+k for k in range(ns))])
  me=bpy.data.meshes.new(name);me.from_pydata(vv,[],ff);o=bpy.data.objects.new(name,me);root.objects.link(o);parts.append(o)
 for s in [-1,1]:
- x=s*.235
+ x=s*.214
  limb('Continuous front leg '+str(s),[(x,-.58,1.12,.14,.16),(x,-.59,.94,.133,.153),(x,-.605,.76,.12,.137),(x,-.622,.57,.104,.12),(x,-.64,.38,.088,.105),(x,-.659,.19,.086,.109),(x,-.682,.105,.096,.122)])
  ell('Front paw '+str(s),(x,-.736,.081),(.123,.163,.071),join=True)
- for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.841+abs(k-1.5)*.01,.064),(.037,.064,.049),join=True,seg=28,rings=20)
+ for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.861+abs(k-1.5)*.014,.066),(.037,.068,.049),join=True,seg=28,rings=20)
  ell('Hind haunch '+str(s),(s*.249,.646,.969),(.16,.231,.28),join=True)
  limb('Continuous angular hind leg '+str(s),[(s*.254,.66,.96,.148,.178),(s*.261,.617,.77,.13,.162),(s*.265,.665,.60,.11,.128),(s*.262,.757,.42,.082,.089),(s*.258,.80,.25,.073,.079),(s*.258,.788,.11,.082,.098)])
  ell('Hind paw '+str(s),(s*.257,.715,.077),(.113,.16,.066),join=True)
@@ -100,11 +100,18 @@ bpy.ops.object.select_all(action='DESELECT')
 for o in parts:o.select_set(True)
 bpy.context.view_layer.objects.active=parts[0];bpy.ops.object.join();body=bpy.context.object;body.name='CAT • unified anatomical sculpt'
 bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
-rem=body.modifiers.new('Continuous skin • voxel union','REMESH');rem.mode='VOXEL';rem.voxel_size=.014;rem.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=rem.name)
+rem=body.modifiers.new('Continuous skin • voxel union','REMESH');rem.mode='VOXEL';rem.voxel_size=.012;rem.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=rem.name)
 sm=body.modifiers.new('Organic relaxation','SMOOTH');sm.factor=1.2;sm.iterations=5;bpy.ops.object.modifier_apply(modifier=sm.name)
 sub=body.modifiers.new('Skin surface subdivision','SUBSURF');sub.levels=1;bpy.ops.object.modifier_apply(modifier=sub.name)
+# Anatomical eye sockets blend the eyelid into the cheek, rather than placing eyes on top.
 for v in body.data.vertices:
+ x,y,z=v.co
+ if y< -1.02 and z>1.57:
+  rr=((abs(x)-.174)/.089)**2+((z-1.724)/.094)**2
+  if rr<2.25:
+   v.co.y += .075*(1-rr/2.25)**2*max(0,min(1,(-y-1.02)/.08))
  if v.co.z<.062:v.co.z=max(.007,.010+(v.co.z-.013)*.7)
+body.data.update()
 body.data.materials.clear();body.data.materials.append(coat)
 for p in body.data.polygons:p.use_smooth=True
 # The reference markings are recreated analytically, never projected from an image.
@@ -135,11 +142,11 @@ ears=[]
 for s in [-1,1]:
  vv=[];ff=[];nu=14;nv=18
  for j in range(nv+1):
-  v=j/nv;span=.212*(1-.73*v**2)
+  v=j/nv;span=.222*max(.045,1-.99*v**1.3)
   for i in range(nu+1):
-   u=i/nu;xx=.287+(u-.5)*span+.018*math.sin(math.pi*v)
+   u=i/nu;xx=.274+.065*v+(u-.5)*span
    yy=-.815-.215*v+.022*math.cos((u-.5)*math.pi)
-   zz=1.903+.076*math.sin(math.pi*v*.91)-.046*v-.032*(2*u-1)**2
+   zz=1.900+.080*math.sin(math.pi*v)-.035*v-.020*v**3-.030*(2*u-1)**2
    vv.append((s*xx,yy,zz))
  for j in range(nv):
   for i in range(nu):
@@ -149,11 +156,11 @@ for s in [-1,1]:
  su=o.modifiers.new('Rounded ear fold','SUBSURF');su.levels=2;bpy.ops.object.modifier_apply(modifier=su.name)
  for p in o.data.polygons:p.use_smooth=True
  ears.append(o)
- inn=ell('Subtle inner ear '+str(s),(s*.294,-.999,1.883),(.046,.012,.026),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
+ inn=ell('Subtle inner ear '+str(s),(s*.292,-.991,1.883),(.055,.012,.033),pink,seg=40,rings=24);inn.rotation_euler.y=s*.45
 # Eye construction uses an embedded dark limbus, curved radial iris, vertical pupil and explicit small reflections.
 for s in [-1,1]:
  theta=s*.43;N=Vector((math.sin(theta),-math.cos(theta),.015));U=Vector((math.cos(theta),math.sin(theta),0));V=Vector((0,0,1));C=Vector((s*.157,-1.134,1.724))
- eye=ell('Eye socket '+str(s),C,(.081,.043,.086),rim,seg=64,rings=48);eye.rotation_euler.z=theta
+ eye=ell('Eye socket '+str(s),C,(.076,.041,.081),rim,seg=64,rings=48);eye.rotation_euler.z=theta
  irisR=.0695;nr=22;nt=192;iv=[C+N*.052];ic=[(.36,.25,.04,1)];iff=[]
  for j in range(1,nr+1):
   r=j/nr
@@ -207,7 +214,7 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  for h in range(count):
   tr=tris[bisect.bisect_left(cum,rng.random()*tot)];a0,b0,c0=[me.vertices[k] for k in tr.vertices];r1=math.sqrt(rng.random());r2=rng.random();weights=(1-r1,r1*(1-r2),r1*r2);p=M@(a0.co*weights[0]+b0.co*weights[1]+c0.co*weights[2]);normal=(R@(a0.normal*weights[0]+b0.normal*weights[1]+c0.normal*weights[2])).normalized();x,y,z=p
   # Keep the corneas and nose unobstructed.
-  if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.157)/.088)**2+((z-1.724)/.094)**2<1.04:continue
+  if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.174)/.087)**2+((z-1.724)/.091)**2<1.04:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
   if z<.031:continue
   if y>1.0 and z>1.35:direction=Vector((0,.5,1));length=.040+rng.random()*.028
@@ -237,6 +244,7 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  print('GROOM_READY',name,len(vs)//12,flush=True);return ob
 hair=groom_surface(body,a.fur,coatcolor,'Body groom')
 for o in ears:groom_surface(o,1700,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.52)
+furmat.shadow_method='NONE'
 # Studio is purpose-built; no HDRI or backdrop image.
 floor=mat('Studio • warm gray',(.64,.66,.635),.88)
 fb=floor.node_tree.nodes.get('Principled BSDF');fb.inputs['Emission Color'].default_value=(.64,.66,.635,1);fb.inputs['Emission Strength'].default_value=.65
@@ -245,7 +253,9 @@ def area(name,loc,power,size,target=(0,0,1),color=(1,1,1)):
  d=bpy.data.lights.new(name,'AREA');d.energy=power;d.shape='DISK';d.size=size;d.color=color;o=bpy.data.objects.new(name,d);studiocol.objects.link(o);o.location=loc;o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
 area('Large softbox • camera left',(-3,-4.5,6),550,4.0,color=(1,.94,.86))
 area('Fill • camera right',(3,-2.0,3.8),340,3.0,color=(.88,.93,1))
-area('Coat edge • rear strip',(0,3.5,4.8),650,3.0,color=(1,1,.97))
+area('Coat edge • rear strip',(0,3.5,4.8),540,3.0,color=(1,1,.97))
+area('Soft frontal bounce',(0,-4.5,2.05),165,5.0,color=(1,.97,.92))
+bpy.data.lights['Soft frontal bounce'].use_shadow=False
 bpy.ops.object.camera_add();cam=bpy.context.object;cam.name='Studio camera';move(cam,studiocol);scene.camera=cam;cam.data.type='ORTHO';cam.data.lens=60;cam.data.clip_end=250
 views={'hero':((3.2,-5.7,2.3),(0,.19,1.13),3.45),'front':((0,-7,1.42),(0,.1,1.13),2.86),'left':((-7,-.01,1.42),(0,.19,1.15),3.50),'right':((7,-.01,1.42),(0,.19,1.15),3.50),'rear':((0,7,1.42),(0,.20,1.12),2.92)}
 def setcam(v):

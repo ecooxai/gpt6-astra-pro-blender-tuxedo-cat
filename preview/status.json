@@ -1,32 +1,46 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 20:30 UTC",
-  "status": "Rendering corrected second iteration",
+  "updated": "2026-10-04 20:43 UTC",
+  "status": "Refining facial anatomy and paw details",
   "progress": 50,
-  "iterations": 1,
+  "iterations": 2,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r01_front.png"
+      "file": "renders/r02_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r01_left.png"
+      "file": "renders/r02_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r01_right.png"
+      "file": "renders/r02_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r01_rear.png"
+      "file": "renders/r02_rear.png"
     }
   ],
   "files": [
+    {
+      "type": "BLEND",
+      "name": "Full Blender scene",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend",
+      "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 43.2 MB.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend"
+    },
+    {
+      "type": "GLB",
+      "name": "Interactive 3D model",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb",
+      "description": "Optimized original geometry and vertex colors for interactive web viewing. 10.5 MB.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb"
+    },
     {
       "type": "PY",
       "name": "Procedural build script",
@@ -55,8 +69,18 @@
       "notes": "Coat layout and raised tail recognizable. Correcting protruding eyes, arched ears, gray blacks, segmented legs, and the rectangular cap boundary visible in profile.",
       "score": 68,
       "image": "renders/r01_hero.png"
+    },
+    {
+      "step": "PASS 02",
+      "time": "20:43",
+      "title": "Continuous anatomy and darker coat",
+      "notes": "Better legs, tail position and coat contrast. Smaller eyes are partly occluded by cheeks; the next pass carves anatomical eye sockets, tapers ear folds, separates toes and softens the under-chin lighting.",
+      "score": 74,
+      "image": "renders/r02_hero.png"
     }
   ],
-  "hero": "renders/r01_hero.png",
-  "score": 68
+  "hero": "renders/r02_hero.png",
+  "score": 74,
+  "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb",
+  "modelVersion": "1791146207481293741"
 }

@@ -22,5 +22,5 @@ for typ,fn,title,desc in [('PY','build_cat.py','Procedural build script','Recons
  src=P/('scripts/'+fn if typ=='PY' else fn)
  if src.exists():shutil.copy2(src,Q/'downloads'/fn);files.append(dict(type=typ,name=title,url='downloads/'+fn,description=desc,path=str(src)))
 d['files']=files
-if (Q/'downloads'/(name+'.glb')).exists():d['model']='downloads/'+name+'.glb'
+if (Q/'downloads'/(name+'.glb')).exists():d['model']='downloads/'+name+'.glb';d['modelVersion']=str((Q/'downloads'/(name+'.glb')).stat().st_mtime_ns)
 tmp=Q/'status.tmp';tmp.write_text(json.dumps(d,indent=2));os.replace(tmp,Q/'status.json');print(json.dumps({'status':d['status'],'score':d.get('score'),'views':len(d.get('views',[])),'files':len(files)}))
