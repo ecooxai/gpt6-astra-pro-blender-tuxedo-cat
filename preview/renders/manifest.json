@@ -1,5 +1,47 @@
 [
   {
+    "file": "r04_detail.png",
+    "modified": 1791148002741201108,
+    "kind": "Blender EEVEE",
+    "kb": 1408,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_detail.png"
+  },
+  {
+    "file": "r04_left.png",
+    "modified": 1791147869448402914,
+    "kind": "Blender EEVEE",
+    "kb": 1049,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_left.png"
+  },
+  {
+    "file": "r04_rear.png",
+    "modified": 1791147765572208485,
+    "kind": "Blender EEVEE",
+    "kb": 1033,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_rear.png"
+  },
+  {
+    "file": "r04_right.png",
+    "modified": 1791147628254053993,
+    "kind": "Blender EEVEE",
+    "kb": 1035,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_right.png"
+  },
+  {
+    "file": "r04_front.png",
+    "modified": 1791147555571620627,
+    "kind": "Blender EEVEE",
+    "kb": 1023,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_front.png"
+  },
+  {
+    "file": "r04_hero.png",
+    "modified": 1791147429608471205,
+    "kind": "Blender EEVEE",
+    "kb": 1028,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r04_hero.png"
+  },
+  {
     "file": "r03_left.png",
     "modified": 1791146924884795743,
     "kind": "Blender EEVEE",
@@ -105,31 +147,52 @@
     "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r01_hero.png"
   },
   {
+    "file": "experiment_native_cycles.png",
+    "modified": 1791148175605501906,
+    "kind": "Blender native-fur experiment / CYCLES",
+    "kb": 930,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/experiment_native_cycles.png"
+  },
+  {
+    "file": "experiment_native_eevee.png",
+    "modified": 1791147969611268666,
+    "kind": "Blender native-fur experiment / EEVEE",
+    "kb": 719,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/experiment_native_eevee.png"
+  },
+  {
     "file": "ui-768.png",
-    "modified": 1791146344253400320,
+    "modified": 1791147728151896287,
     "kind": "Browser QA capture",
-    "kb": 476,
+    "kb": 561,
     "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/ui-768.png"
   },
   {
     "file": "ui-390.png",
-    "modified": 1791146342167215658,
+    "modified": 1791147725564667283,
     "kind": "Browser QA capture",
-    "kb": 395,
+    "kb": 473,
     "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/ui-390.png"
   },
   {
     "file": "webgl-ui.png",
-    "modified": 1791146309639336407,
+    "modified": 1791147681602776068,
     "kind": "Browser QA capture",
-    "kb": 180,
+    "kb": 223,
     "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/webgl-ui.png"
   },
   {
     "file": "desktop-ui.png",
-    "modified": 1791146300297509501,
+    "modified": 1791147669392695313,
     "kind": "Browser QA capture",
-    "kb": 682,
+    "kb": 731,
     "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/desktop-ui.png"
+  },
+  {
+    "file": "lighting_r04_cycles.png",
+    "modified": 1791147531626501162,
+    "kind": "Blender Cycles lighting comparison",
+    "kb": 848,
+    "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/lighting_r04_cycles.png"
   }
 ]
