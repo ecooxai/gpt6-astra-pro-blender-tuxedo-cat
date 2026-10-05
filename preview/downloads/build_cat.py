@@ -36,7 +36,7 @@ def attrmat(name,rough=.65):
 coat=attrmat('01 • procedural black and warm-white coat',.8)
 n=coat.node_tree.nodes;b=n.get('Principled BSDF');b.inputs['Subsurface Weight'].default_value=.04;b.inputs['Subsurface Radius'].default_value=(.8,.5,.3);b.inputs['Sheen Weight'].default_value=.08; b.inputs['Specular IOR Level'].default_value=.13
 tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs['Detail'].default_value=2.3;bu=n.new('ShaderNodeBump');bu.inputs['Strength'].default_value=.16;bu.inputs['Distance'].default_value=.009;coat.node_tree.links.new(tex.outputs['Fac'],bu.inputs['Height']);coat.node_tree.links.new(bu.outputs['Normal'],b.inputs['Normal'])
-furmat=attrmat('02 • individually colored fibers',.76);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.13; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
+furmat=attrmat('02 • individually colored fibers',.76);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.06; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.08
 black=mat('03 • soft black cartilage',(.0032,.0038,.0047),.93)
 black.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.12
 rim=mat('04 • wet dark eyelid',(.008,.007,.006),.58)
@@ -137,29 +137,36 @@ def paint(o,fn):
 paint(body,coatcolor)
 install_coat_shader(coat)
 # Folded ears: the cartilage travels up, rolls forward and turns down into a rounded tip.
+from mathutils.bvhtree import BVHTree
+_ear_bvh=BVHTree.FromObject(body,bpy.context.evaluated_depsgraph_get())
 ears=[];inner_ears=[]
 for s in [-1,1]:
- vv=[];ff=[];nu=14;nv=18
+ vv=[];ff=[];nu=18;nv=24
  for j in range(nv+1):
-  v=j/nv;span=.205*max(.035,1-.98*v)
+  v=j/nv
   for i in range(nu+1):
-   u=i/nu;xx=.277+.008*math.sin(math.pi*v)+(u-.5)*span
-   yy=-.806-.225*v+.012*math.cos((u-.5)*math.pi)
-   zz=1.884+.103*math.sin(math.pi*v*.87)-.037*v-.125*(2*u-1)**2*(1-v)
-   vv.append((s*xx,yy,zz))
+   u=i/nu;q=2*u-1;seed=Vector((s*(.252+.090*q),-.790,1.895));nearest,norm,_,_=_ear_bvh.find_nearest(seed)
+   p0=(nearest-norm*.009) if nearest is not None else seed
+   p1=Vector((s*(.275+.075*q),-.866,1.984-.018*q*q))
+   p2=Vector((s*(.287+.040*q),-.970,1.939-.009*q*q))
+   p3=Vector((s*(.291+.002*q),-1.022,1.891))
+   if v<.37:t=v/.37;aa,bb=p0,p1
+   elif v<.72:t=(v-.37)/.35;aa,bb=p1,p2
+   else:t=(v-.72)/.28;aa,bb=p2,p3
+   t=t*t*(3-2*t);vv.append(tuple(aa.lerp(bb,t)))
  for j in range(nv):
   for i in range(nu):
    k=j*(nu+1)+i;face=(k,k+1,k+nu+2,k+nu+1);ff.append(face if s==1 else face[::-1])
  me=bpy.data.meshes.new('Folded cartilage topology');me.from_pydata(vv,[],ff);o=bpy.data.objects.new('Folded ear '+str(s),me);root.objects.link(o);o.data.materials.append(black)
- sol=o.modifiers.new('Soft cartilage thickness','SOLIDIFY');sol.thickness=.022;bpy.context.view_layer.objects.active=o;bpy.ops.object.modifier_apply(modifier=sol.name)
+ sol=o.modifiers.new('Soft cartilage thickness','SOLIDIFY');sol.thickness=.012;bpy.context.view_layer.objects.active=o;bpy.ops.object.modifier_apply(modifier=sol.name)
  su=o.modifiers.new('Rounded ear fold','SUBSURF');su.levels=2;bpy.ops.object.modifier_apply(modifier=su.name)
  for p in o.data.polygons:p.use_smooth=True
  ears.append(o)
- ev=[(s*.280,-.931,1.905)];ef=[];en=64;er=8
+ ev=[(s*.277,-.923,1.911)];ef=[];en=64;er=8
  for j in range(1,er+1):
   r=j/er
   for k in range(en):
-   t=k*2*math.pi/en;ev.append((s*.280+.046*r*math.cos(t),-.953+.022*(1-r*r),1.905+.041*r*math.sin(t)))
+   t=k*2*math.pi/en;ev.append((s*.277+.037*r*math.cos(t),-.943+.020*(1-r*r),1.911+.025*r*math.sin(t)))
  for k in range(en):ef.append((0,1+k,1+(k+1)%en))
  for j in range(er-1):
   for k in range(en):
@@ -283,7 +290,7 @@ for col in [root,groomcol,guidecol]:
  for ob in col.objects:ob.location.z-=ground_offset
 scene['ground_offset']=ground_offset
 add_cornea(root,ground_offset)
-furmat.shadow_method='NONE'
+furmat.shadow_method='OPAQUE'
 # Studio is purpose-built; no HDRI or backdrop image.
 floor=mat('Studio • warm gray',(.64,.66,.635),.88)
 fb=floor.node_tree.nodes.get('Principled BSDF');fb.inputs['Emission Color'].default_value=(.64,.66,.635,1);fb.inputs['Emission Strength'].default_value=1.04

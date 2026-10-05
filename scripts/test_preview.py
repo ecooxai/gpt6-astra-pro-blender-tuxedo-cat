@@ -1,9 +1,9 @@
-import json,time,sys
+import json,time,sys,os,shutil
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-P=Path(__file__).resolve().parents[1];errors=[];results={};target='http://127.0.0.1:8794/'
+P=Path(__file__).resolve().parents[1];errors=[];results={};target=os.environ.get('CAT_PREVIEW_URL','http://127.0.0.1:8794/')
 with sync_playwright() as p:
- browser=p.chromium.launch(executable_path='/home/dev/.local/bin/chromium',headless=True,args=['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
+ browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH') or shutil.which('chromium') or shutil.which('google-chrome'),headless=True,args=['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
  page=browser.new_page(viewport={'width':1440,'height':1080},device_scale_factor=1)
  page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto(target,wait_until='networkidle',timeout=60000);page.wait_for_timeout(1500)

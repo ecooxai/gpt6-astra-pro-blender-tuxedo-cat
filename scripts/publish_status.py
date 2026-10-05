@@ -11,14 +11,15 @@ for v,title in [('front','Front view'),('left','Left profile'),('right','Right p
  if (Q/f).exists():views.append(dict(id=v,label=title,file=f))
 if len(views)==4:d['views']=views;d['viewSetRevision']=args.revision
 if args.score is not None:
- d['score']=args.score;d['iterations']=args.revision
+ d['score']=args.score;d['latest_revision']=args.revision
  entry=dict(step=f'PASS {args.revision:02}',time=datetime.datetime.now().strftime('%H:%M'),title=args.title,notes=args.notes,score=args.score,image=hero)
  d['journal']=[e for e in d.get('journal',[]) if e['step']!=entry['step']]+[entry]
+d['iterations']=sum(1 for e in d.get('journal',[]) if str(e.get('step','')).startswith('PASS ') and e.get('score') is not None)
 files=[]
 for typ,fn,desc in [('BLEND',name+'.blend','Editable full-resolution sculpt, groom, materials, lights and camera.'),('GLB',name+'.glb','Optimized original geometry and vertex colors for interactive web viewing.'),('ZIP',name+'.zip','Source scripts, viewer, review journal, and complete Blender project.')]:
  f=Q/'downloads'/fn
  if f.exists():files.append(dict(type=typ,name={'BLEND':'Full Blender scene','GLB':'Interactive 3D model','ZIP':'Complete project archive'}[typ],url='downloads/'+fn+'?v='+str(f.stat().st_mtime_ns),description=desc+f' {f.stat().st_size/1048576:.1f} MB.',path=str(f)))
-for typ,fn,title,desc in [('PY','coat_field.py','Procedural coat field','Companion module: original continuous black-and-white coat mathematics.'),('PY','build_cat.py','Procedural build script','Reconstructs the cat from original mathematical geometry.'),('MD','Agents.md','Agent handoff','Exact paths, commands, limitations and completed review history.')]:
+for typ,fn,title,desc in [('PY','native_groom.py','Native groom module','Companion module: editable fiber centerlines and eye coating geometry.'),('PY','coat_field.py','Procedural coat field','Companion module: original continuous black-and-white coat mathematics.'),('PY','build_cat.py','Procedural build script','Reconstructs the cat from original mathematical geometry.'),('MD','Agents.md','Agent handoff','Exact paths, commands, limitations and completed review history.')]:
  src=P/('scripts/'+fn if typ=='PY' else fn)
  if src.exists():shutil.copy2(src,Q/'downloads'/fn);files.append(dict(type=typ,name=title,url='downloads/'+fn,description=desc,path=str(src)))
 d['files']=files

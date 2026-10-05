@@ -1,45 +1,52 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-04 21:50 UTC",
-  "status": "Eighth refinement: scalp-anchored folds and finer fur shading",
+  "updated": "2026-10-05 06:00 UTC",
+  "status": "Refining facial anatomy in pass 9",
   "progress": 50,
-  "iterations": 7,
+  "iterations": 8,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r06_front.png"
+      "file": "renders/r08_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r06_left.png"
+      "file": "renders/r08_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r06_right.png"
+      "file": "renders/r08_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r06_rear.png"
+      "file": "renders/r08_rear.png"
     }
   ],
   "files": [
     {
       "type": "BLEND",
       "name": "Full Blender scene",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149784126244714",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149784000000000",
       "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 61.6 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend"
     },
     {
       "type": "GLB",
       "name": "Interactive 3D model",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791149600263458875",
-      "description": "Optimized original geometry and vertex colors for interactive web viewing. 13.4 MB.",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791150786000000000",
+      "description": "Optimized original geometry and vertex colors for interactive web viewing. 16.1 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb"
+    },
+    {
+      "type": "PY",
+      "name": "Native groom module",
+      "url": "downloads/native_groom.py",
+      "description": "Companion module: editable fiber centerlines and eye coating geometry.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/scripts/native_groom.py"
     },
     {
       "type": "PY",
@@ -124,11 +131,20 @@
       "notes": "Pupils no longer add their own glossy reflections, paw fur is shorter, and rendered attribution is included. The attempted lower ear roots create drooping outer edges, so this pass is rated slightly below pass 6. Replacing the ear patch with scalp-anchored folded triangles.",
       "score": 85,
       "image": "renders/r07_hero.png"
+    },
+    {
+      "step": "PASS 08",
+      "time": "06:00",
+      "title": "Recovered pass-eight review",
+      "notes": "Reviewed hero, front and close-up. Remaining issues: vertically stretched projecting eyes, coarse facial fur, parallel brow whiskers and low chin ridge.",
+      "score": 86,
+      "image": "renders/r08_hero.png"
     }
   ],
-  "hero": "renders/r07_hero.png",
-  "score": 85,
+  "hero": "renders/r08_hero.png",
+  "score": 86,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
-  "modelVersion": "1791149600986457953",
-  "viewSetRevision": 6
+  "modelVersion": "1791150786000000000",
+  "viewSetRevision": 8,
+  "latest_revision": 8
 }
