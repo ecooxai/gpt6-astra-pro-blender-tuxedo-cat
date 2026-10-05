@@ -3,3 +3,4 @@
 .hero-path{padding:0 25px 15px;font-size:8px}.entry .score small{font-size:9px;display:block;font-family:Arial,sans-serif;color:#737c73;margin-top:3px}
 
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.orbit-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:8px 16px 0}.orbit-tools button{border:1px solid #c7cbc1;background:transparent;color:var(--ink);font-size:10px;min-height:36px;padding:7px 14px;cursor:pointer}.orbit-tools button.selected{background:var(--ink);color:white}.orbit-tools button:hover{border-color:var(--accent)}

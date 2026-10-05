@@ -1,9 +1,9 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-05 06:00 UTC",
-  "status": "Refining facial anatomy in pass 9",
+  "updated": "2026-10-05 06:09 UTC",
+  "status": "Rendering pass 10; optical and ear-tip corrections",
   "progress": 50,
-  "iterations": 8,
+  "iterations": 9,
   "views": [
     {
       "id": "front",
@@ -139,12 +139,20 @@
       "notes": "Reviewed hero, front and close-up. Remaining issues: vertically stretched projecting eyes, coarse facial fur, parallel brow whiskers and low chin ridge.",
       "score": 86,
       "image": "renders/r08_hero.png"
+    },
+    {
+      "step": "PASS 09",
+      "time": "06:09",
+      "title": "Finer groom and rounder eyes; coating regression",
+      "notes": "Hero reviewed: finer native strands, a lifted chin and less uniform brow whiskers improve form. The experimental reflection film flattens the pupils, so this pass is below the recovered 86 score. Correcting shallow physical cornea, groomed eyelid margins and scalp-resting folded ear tips.",
+      "score": 85,
+      "image": "renders/r09_hero.png"
     }
   ],
-  "hero": "renders/r08_hero.png",
-  "score": 86,
+  "hero": "renders/r09_hero.png",
+  "score": 85,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
   "modelVersion": "1791150786000000000",
   "viewSetRevision": 8,
-  "latest_revision": 8
+  "latest_revision": 9
 }

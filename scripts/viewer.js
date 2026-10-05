@@ -19,5 +19,6 @@ export async function initViewer(el,url){
  function resize(){const w=el.clientWidth,h=el.clientHeight;if(w&&h){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true;}}
  new ResizeObserver(resize).observe(el);resize();
  function frame(now){requestAnimationFrame(frame);if(visible&&!el.hidden&&now-last>33){controls.update();if(dirty){renderer.render(scene,camera);dirty=false;last=now;}}}requestAnimationFrame(frame);
- renderer.domElement.setAttribute('aria-label','Interactive black and white cat. Drag to orbit; scroll or pinch to zoom.');renderer.domElement.setAttribute('role','img');window.catViewer={scene,renderer,camera,controls,model};return {resize,scene,loadModel};
+ function setView(name){const presets={hero:[2.8,2.25,5.0],front:[0,1.42,6],left:[-6,1.42,-.18],right:[6,1.42,-.18],rear:[0,1.42,-6.3]};controls.target.set(0,1.12,-.18);camera.position.set(...(presets[name]||presets.hero));controls.update();dirty=true;}
+ renderer.domElement.setAttribute('aria-label','Interactive black and white cat. Drag to orbit; scroll or pinch to zoom.');renderer.domElement.setAttribute('role','img');window.catViewer={scene,renderer,camera,controls,model};return {resize,scene,loadModel,setView};
 }
