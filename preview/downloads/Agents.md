@@ -66,3 +66,9 @@ Headless Chrome checks cover render loading, all four image-view controls, real 
 Use Git commits after meaningful source/review checkpoints. The authenticated `gh` credential helper works; never expose credentials. Push the continuation branch, select it in the repository Pages configuration, check the Pages build result and test the public URL. Large release archives belong in GitHub Releases rather than Git history. Source changes alone do not prove deployment.
 
 Record actual finished tests and any incomplete work in README/status before packaging. Colab restoration does not preserve /build unless copied into home; ensure the full .blend is in preview/downloads before invoking Colab backup. Never stop the instance as a substitute for backup.
+
+## Published revision-12 release
+
+Release: https://github.com/ecooxai/gpt6-astra-pro-blender-tuxedo-cat/releases/tag/r12-gpt6-astra-pro-blender
+
+Archive source snapshot: `6f104a4`. The archive has 136 files, passed ZIP CRC validation and matches the uploaded asset size. SHA-256: `5ad860ac01c04ccbebdc9794109e11bb4e2a364fae9bd542981289be6378f738`. Later repository commits record deployment metadata rather than alter this tagged source snapshot.

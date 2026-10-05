@@ -1,7 +1,7 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-05 06:42 UTC",
-  "status": "Revision 12 checkpoint: six reviewed EEVEE views; packaging the source archive",
+  "updated": "2026-10-05 06:47 UTC",
+  "status": "Revision 12 published: original Blender scene, six EEVEE views and verified project archive",
   "progress": 50,
   "iterations": 12,
   "views": [
@@ -40,6 +40,13 @@
       "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791182142740783976",
       "description": "Optimized original geometry and vertex colors for interactive web viewing. 16.6 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb"
+    },
+    {
+      "type": "ZIP",
+      "name": "Complete project archive",
+      "url": "https://github.com/ecooxai/gpt6-astra-pro-blender-tuxedo-cat/releases/download/r12-gpt6-astra-pro-blender/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.zip",
+      "description": "Source scripts, viewer, review journal, and complete Blender project. 118.9 MB.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.zip"
     },
     {
       "type": "PY",
