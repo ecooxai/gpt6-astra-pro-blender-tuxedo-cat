@@ -1,0 +1,27 @@
+{
+  "revision": 12,
+  "images_embedded_in_glb": 0,
+  "portable_coat_sheen_removed": true,
+  "assets": [
+    {
+      "name": "GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend",
+      "bytes": 42770146,
+      "sha256": "12b47e8b38941a760c530759f831f0cc0756a567147c38135806b5d7b007ace6"
+    },
+    {
+      "name": "GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb",
+      "bytes": 17441584,
+      "sha256": "b827ff9740909cf2196d2d323da62e9313f69526cfc6cc8d731a3eda92b6d4d9"
+    },
+    {
+      "name": "GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
+      "bytes": 2879684,
+      "sha256": "9c581c71ea7059292a3b3be8f40b7008294886b3d8e80aef1258a7d006e942ce"
+    }
+  ],
+  "actual_reviewed_passes": 12,
+  "subjective_score": 89,
+  "requested_passes": 20000,
+  "requested_score_above": 95,
+  "target_met": false
+}

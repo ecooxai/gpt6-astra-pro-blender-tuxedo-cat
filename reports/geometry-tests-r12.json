@@ -1,0 +1,41 @@
+{
+  "revision": 12,
+  "vertices_body": 373498,
+  "polygons_body": 373496,
+  "body_closed_edges": true,
+  "nonfinite_body_vertices": 0,
+  "bounds": {
+    "min": [
+      -0.5320706963539124,
+      -1.3091545104980469,
+      0.0
+    ],
+    "max": [
+      0.4081012010574341,
+      1.5596755743026733,
+      2.312007188796997
+    ]
+  },
+  "feet": {
+    "front_left": {
+      "min_z": 0.0007414985448122025,
+      "vertices": 4184
+    },
+    "rear_left": {
+      "min_z": 0.0006794901564717293,
+      "vertices": 4866
+    },
+    "front_right": {
+      "min_z": 6.977468729019165e-06,
+      "vertices": 6330
+    },
+    "rear_right": {
+      "min_z": 0.0006807716563344002,
+      "vertices": 7535
+    }
+  },
+  "ground_plane_z": 0.0,
+  "paw_left_right_height_delta": 0.0007345210760831833,
+  "actual_groom_strands": 280063,
+  "note": "Structural validation only. This does not establish visual likeness or an independent quality score."
+}

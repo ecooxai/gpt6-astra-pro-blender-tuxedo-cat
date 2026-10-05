@@ -22,7 +22,7 @@ def add_cornea(root,ground_offset=0):
  """Shallow physical film over the newly embedded, rounder eyes."""
  import bpy,math
  from mathutils import Vector
- scene=bpy.context.scene;scene.eevee.use_ssr=True;scene.eevee.use_ssr_refraction=True
+ scene=bpy.context.scene;scene.eevee.use_ssr=False;scene.eevee.use_ssr_refraction=False
  m=bpy.data.materials.new('11 • shallow clear corneal film');m.use_nodes=True
  bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(.997,.998,1,1);bs.inputs['Roughness'].default_value=.07;bs.inputs['IOR'].default_value=1.34;bs.inputs['Transmission Weight'].default_value=1
  m.blend_method='OPAQUE';m.use_screen_refraction=True;m.refraction_depth=.001;m.shadow_method='NONE'
@@ -36,10 +36,10 @@ def add_cornea(root,ground_offset=0):
   for j in range(nr-1):
    for k in range(nt):
     i=1+j*nt+k;n=1+j*nt+(k+1)%nt;ff.append((i,n,n+nt,i+nt))
-  me=bpy.data.meshes.new('Corneal dome '+str(side));me.from_pydata(vv,[],ff);ob=bpy.data.objects.new('Cornea '+str(side),me);root.objects.link(ob);me.materials.append(m)
+  me=bpy.data.meshes.new('Corneal dome '+str(side));me.from_pydata(vv,[],ff);ob=bpy.data.objects.new('Cornea '+str(side),me);root.objects.link(ob);me.materials.append(m);ob.hide_render=True;ob['optional_physical_cornea']=True
   for f in me.polygons:f.use_smooth=True
   wall=ob.modifiers.new('Very thin optical wall','SOLIDIFY');wall.thickness=.00035
   for label in ['Softbox eye reflection ','Secondary eye glint ']:
    glint=bpy.data.objects.get(label+str(side))
-   if glint:glint.hide_render=True;glint.hide_set(True);glint['web_reflection_fallback']=True
+   if glint:glint.hide_render=False;glint.hide_set(False);glint['web_reflection_fallback']=True
  return m

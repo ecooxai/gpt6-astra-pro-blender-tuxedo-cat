@@ -1,0 +1,17 @@
+{
+  "title": "Tuxedo Cat \u2014 GPT-6 Astra Pro \u00b7 Blender Studio",
+  "desktop_overflow": false,
+  "hero_loaded": true,
+  "view_controls": 4,
+  "model_ready_check_seconds": 2.15,
+  "idle_extra_frames": 0,
+  "webgl_meshes": 80,
+  "webgl_triangles": 557648,
+  "orbit_drag": true,
+  "camera_presets": 5,
+  "render_switchback": true,
+  "overflow_390": false,
+  "overflow_768": false,
+  "ready_check_includes_settle_seconds": 2,
+  "page_errors": []
+}

@@ -40,16 +40,19 @@ tex=n.new('ShaderNodeTexNoise');tex.inputs['Scale'].default_value=240;tex.inputs
 furmat=attrmat('02 • individually colored fibers',.76);furmat.node_tree.nodes.get('Principled BSDF').inputs['Sheen Weight'].default_value=.06; furmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.08
 black=mat('03 • soft black cartilage',(.0032,.0038,.0047),.93)
 black.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.12
-rim=mat('04 • wet dark eyelid',(.0015,.0018,.0015),.72)
-rim.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.18
+rim=mat('04 • wet dark eyelid',(.0005,.0007,.0006),.94)
+rim.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=0
 nosemat=mat('05 • charcoal rose nose',(.010,.009,.011),.40)
+lidskin=mat('12 • matte black eyelid skin',(.0012,.0014,.0016),.96);lidskin.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=0
 pink=mat('06 • muted warm ear interior',(.067,.039,.035),.92)
 white=mat('07 • warm ivory whiskers',(.83,.81,.73),.47)
 pupilmat=mat('08 • deep pupil',(.00015,.0002,.00015),.95)
 pupilmat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=0
+pupilmat.node_tree.nodes.get('Principled BSDF').inputs['Coat Weight'].default_value=.08;pupilmat.node_tree.nodes.get('Principled BSDF').inputs['Coat Roughness'].default_value=.06
 catchmat=mat('09 • corneal studio reflection',(.95,.98,1),.08);cb=catchmat.node_tree.nodes.get('Principled BSDF');cb.inputs['Emission Color'].default_value=(.7,.77,.8,1);cb.inputs['Emission Strength'].default_value=.4
 irisMat=attrmat('10 • radial golden iris fibers',.65)
 irisMat.node_tree.nodes.get('Principled BSDF').inputs['Specular IOR Level'].default_value=.06
+irisMat.node_tree.nodes.get('Principled BSDF').inputs['Coat Weight'].default_value=.22;irisMat.node_tree.nodes.get('Principled BSDF').inputs['Coat Roughness'].default_value=.08
 fa=furmat.node_tree.nodes.new('ShaderNodeAttribute');fa.attribute_name='Coat';furmat.node_tree.links.new(fa.outputs['Color'],furmat.node_tree.nodes.get('Principled BSDF').inputs['Base Color'])
 parts=[]
 def ell(name,loc,scale,material=None,join=False,seg=48,rings=32):
@@ -76,7 +79,7 @@ def limb(name,rings):
  vv=[];ff=[];ns=24
  for j,(x,y,z,rx,ry) in enumerate(rings):
   for k in range(ns):
-   t=k*2*math.pi/ns;vv.append((x+rx*math.cos(t),y+ry*math.sin(t),z))
+   t=k*2*math.pi/ns;dy=(.10*(1-min(1,z/1.15)) if 'front' in name else -.14*(1-min(1,z/.96))) if x<0 else 0;vv.append((x+rx*math.cos(t),y+dy+ry*math.sin(t),z))
   if j:
    for k in range(ns):ff.append(((j-1)*ns+k,(j-1)*ns+(k+1)%ns,j*ns+(k+1)%ns,j*ns+k))
  ff.extend([tuple(reversed(range(ns))),tuple((len(rings)-1)*ns+k for k in range(ns))])
@@ -84,12 +87,12 @@ def limb(name,rings):
 for s in [-1,1]:
  x=s*.230
  limb('Continuous front leg '+str(s),[(x,-.58,1.12,.14,.16),(x,-.59,.94,.133,.153),(x,-.605,.76,.12,.137),(x,-.622,.57,.104,.12),(x,-.64,.38,.097,.108),(x,-.659,.19,.093,.113),(x,-.682,.105,.096,.122)])
- ell('Front paw '+str(s),(x,-.736,.081),(.123,.163,.071),join=True)
- for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.861+abs(k-1.5)*.014,.066),(.037,.068,.049),join=True,seg=28,rings=20)
+ ell('Front paw '+str(s),(x,-.736+(.10 if s<0 else 0),.081),(.123,.163,.071),join=True)
+ for k in range(4):ell('Front toe '+str(s)+'.'+str(k),(x+(k-1.5)*.051,-.861+abs(k-1.5)*.014+(.10 if s<0 else 0),.066),(.037,.068,.049),join=True,seg=28,rings=20)
  ell('Hind haunch '+str(s),(s*.249,.646,.969),(.16,.231,.28),join=True)
  limb('Continuous angular hind leg '+str(s),[(s*.254,.66,.96,.148,.178),(s*.261,.617,.77,.13,.162),(s*.265,.665,.60,.11,.128),(s*.262,.757,.42,.082,.089),(s*.258,.80,.25,.073,.079),(s*.258,.788,.11,.082,.098)])
- ell('Hind paw '+str(s),(s*.257,.715,.077),(.113,.16,.066),join=True)
- for k in range(4):ell('Rear toe '+str(s)+'.'+str(k),(s*.257+(k-1.5)*.047,.604+abs(k-1.5)*.011,.057),(.033,.065,.045),join=True,seg=24,rings=16)
+ ell('Hind paw '+str(s),(s*.257,.715-(.14 if s<0 else 0),.077),(.113,.16,.066),join=True)
+ for k in range(4):ell('Rear toe '+str(s)+'.'+str(k),(s*.257+(k-1.5)*.047,.604+abs(k-1.5)*.011-(.14 if s<0 else 0),.057),(.033,.065,.045),join=True,seg=24,rings=16)
 # Curved, full-bodied tail with smoothly varying circular sections.
 def catmull(ps,steps=9):
  ps=[Vector(p) for p in ps];out=[]
@@ -125,6 +128,11 @@ for v in body.data.vertices:
   if rr<2.25:
    v.co.y += .062*(1-rr/2.25)**2*max(0,min(1,(-y-1.02)/.08))
  if v.co.z<.062:v.co.z=max(.007,.010+(v.co.z-.013)*.7)
+# Soft anatomical toe channels, sculpted into our own continuous mesh.
+for v in body.data.vertices:
+ x,y,z=v.co;side=-1 if x<0 else 1;cy=-.736+(.10 if side<0 else 0)
+ if z<.115 and y<cy-.095 and abs(x-side*.230)<.112:
+  gap=min(abs(x-(side*.230+t)) for t in [-.051,0,.051]);v.co.y+=.006*math.exp(-(gap/.008)**2)*math.exp(-((z-.061)/.045)**2)
 body.data.update()
 body.data.materials.clear();body.data.materials.append(coat)
 for p in body.data.polygons:p.use_smooth=True
@@ -203,7 +211,7 @@ for s in [-1,1]:
  for k in range(96):pf.append((0,k+1,(k+1)%96+1))
  me=bpy.data.meshes.new('Pupil slit');me.from_pydata(pv,[],pf);po=bpy.data.objects.new('Vertical pupil '+str(s),me);root.objects.link(po);me.materials.append(pupilmat)
  for poly in me.polygons:poly.use_smooth=True
- hi=ell('Softbox eye reflection '+str(s),C+U*(-.019)+V*.024+N*.043,(.006,.0018,.008),catchmat,seg=32,rings=20);hi.rotation_euler.z=theta;hi.rotation_euler.y=-.25
+ hi=ell('Softbox eye reflection '+str(s),C+U*(-.019)+V*.024+N*.043,(.00432,.001296,.00576),catchmat,seg=32,rings=20);hi.rotation_euler.z=theta;hi.rotation_euler.y=-.25
  hi=ell('Secondary eye glint '+str(s),C+U*.022+V*(-.020)+N*.041,(.0022,.0012,.0028),catchmat,seg=20,rings=12);hi.rotation_euler.z=theta
 # Annular eyelid tissue joins the corneal margin to the actual sculpt surface.
  lv=[];lf=[];ln=96;lr=5
@@ -217,13 +225,16 @@ for s in [-1,1]:
  for j in range(lr):
   for k in range(ln):
    q=j*ln+k;nq=j*ln+(k+1)%ln;lf.append((q,nq,nq+ln,q+ln))
- lm=bpy.data.meshes.new('Anatomical eyelid transition '+str(s));lm.from_pydata(lv,[],lf);lm.update();lid=bpy.data.objects.new('Sculpted eyelids '+str(s),lm);root.objects.link(lid);lm.materials.append(rim);lm.materials.append(coat)
+ lm=bpy.data.meshes.new('Anatomical eyelid transition '+str(s));lm.from_pydata(lv,[],lf);lm.update();lid=bpy.data.objects.new('Sculpted eyelids '+str(s),lm);root.objects.link(lid);lm.materials.append(rim);lm.materials.append(lidskin)
  for i,poly in enumerate(lm.polygons):poly.use_smooth=True;poly.material_index=1
  paint(lid,coatcolor);sub=lid.modifiers.new('Soft eyelid tissue','SUBSURF');sub.levels=1;eye_lids.append(lid)
 # Shaped nose, philtrum, lips and whisker follicles.
-vs=[(-.062,-1.299,1.555),(.062,-1.299,1.555),(.049,-1.34,1.548),(0,-1.352,1.508),(-.049,-1.34,1.548),(0,-1.282,1.513)]
-fs=[(0,1,2,4),(4,2,3),(0,4,3,5),(1,5,3,2),(0,5,1)]
-me=bpy.data.meshes.new('Nose heart topology');me.from_pydata(vs,[],fs);nose=bpy.data.objects.new('Soft triangular nose',me);root.objects.link(nose);me.materials.append(nosemat);be=nose.modifiers.new('Rounded nose edges','BEVEL');be.width=.012;be.segments=3;su=nose.modifiers.new('Nose softness','SUBSURF');su.levels=2
+# Rounded nasal planum: upper lobes, shallow notch and soft lower point.
+outline=[(0,1.550),(.024,1.554),(.043,1.545),(.032,1.529),(0,1.512),(-.032,1.529),(-.043,1.545),(-.024,1.554)]
+vs=[(0,-1.357,1.536)]+[(x,-1.337-.010*(1-abs(x)/.05),z) for x,z in outline]+[(x,-1.311,z) for x,z in outline]+[(0,-1.308,1.536)];fs=[]
+for k in range(8):
+ n=(k+1)%8;fs.extend([(0,1+n,1+k),(1+k,1+n,9+n,9+k),(17,9+k,9+n)])
+me=bpy.data.meshes.new('Original rounded nasal topology');me.from_pydata(vs,[],fs);nose=bpy.data.objects.new('Soft lobed cat nose',me);root.objects.link(nose);me.materials.append(nosemat);su=nose.modifiers.new('Rounded nasal planum','SUBSURF');su.levels=2
 for p in me.polygons:p.use_smooth=True
 def strand_curve(name,points,radius,material,col=root):
  cu=bpy.data.curves.new(name,'CURVE');cu.dimensions='3D';cu.resolution_u=2;cu.bevel_depth=radius;cu.bevel_resolution=2;sp=cu.splines.new('POLY');sp.points.add(len(points)-1)
@@ -244,17 +255,18 @@ for s in [-1,1]:
 print('SCULPT_READY',len(body.data.vertices),'vertices',flush=True)
 nostrilmat=mat('Nose creases • soft charcoal',(.0012,.001,.001),.83)
 for side in [-1,1]:
- nostril=ell('Nostril '+str(side),(side*.029,-1.342,1.541),(.007,.0022,.0035),nostrilmat,seg=24,rings=16);nostril.rotation_euler.y=side*.24
+ nostril=ell('Nostril '+str(side),(side*.025,-1.349,1.540),(.0055,.0018,.003),nostrilmat,seg=24,rings=16);nostril.rotation_euler.y=side*.24
 nb=nosemat.node_tree.nodes;nt=nb.new('ShaderNodeTexNoise');nt.inputs['Scale'].default_value=95;nt.inputs['Detail'].default_value=2;np=nb.new('ShaderNodeBump');np.inputs['Strength'].default_value=.10;np.inputs['Distance'].default_value=.0015;nosemat.node_tree.links.new(nt.outputs['Fac'],np.inputs['Height']);nosemat.node_tree.links.new(np.outputs['Normal'],nb.get('Principled BSDF').inputs['Normal'])
 # Deterministic surface-area strand sampling of ORIGINAL geometry, not image analysis.
-def groom_surface(obj,count,colorfn,name,length_scale=1):
+def groom_surface(obj,count,colorfn,name,length_scale=1,region=None):
  me=obj.data;me.calc_loop_triangles();tris=list(me.loop_triangles);cum=[];tot=0
+ if region=='face':tris=[tr for tr in tris if sum(me.vertices[k].co.z for k in tr.vertices)>4.45 and sum(me.vertices[k].co.y for k in tr.vertices)<-2.52]
  for tri in tris:tot+=tri.area;cum.append(tot)
  vs=[];radii=[];cols=[];rng=random.Random(171+count);M=obj.matrix_world;R=M.to_3x3()
  for h in range(count):
   tr=tris[bisect.bisect_left(cum,rng.random()*tot)];a0,b0,c0=[me.vertices[k] for k in tr.vertices];r1=math.sqrt(rng.random());r2=rng.random();weights=(1-r1,r1*(1-r2),r1*r2);p=M@(a0.co*weights[0]+b0.co*weights[1]+c0.co*weights[2]);normal=(R@(a0.normal*weights[0]+b0.normal*weights[1]+c0.normal*weights[2])).normalized();x,y,z=p
   # Keep the corneas and nose unobstructed.
-  if name=='Body groom' and y<-1.09 and z>1.60 and ((abs(x)-.177)/.073)**2+((z-1.724)/.071)**2<1.02:continue
+  if name in ('Body groom','Face microgroom') and y<-1.09 and z>1.60 and ((abs(x)-.177)/.073)**2+((z-1.724)/.071)**2<1.02:continue
   if name.startswith('Lid groom') and ((abs(x)-.177)/.072)**2+((z-1.724)/.069)**2<1.0:continue
   if y<-1.287 and abs(x)<.067 and 1.502<z<1.574:continue
   if z<.010 or (z<.033 and normal.z<-.35):continue
@@ -270,7 +282,7 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
   if z<.22:length*=.16+.84*max(0,min(1,(z-.09)/.13))
   if rng.random()<.12 and z>.2:length*=1.35
   length*=length_scale
-  if name=='Body groom' and y<-.97 and z>1.57 and ((abs(x)-.179)/.16)**2+((z-1.724)/.16)**2<1.0:direction=Vector((x-math.copysign(.179,x),-.02,z-1.724))
+  if name in ('Body groom','Face microgroom') and y<-.97 and z>1.57 and ((abs(x)-.179)/.16)**2+((z-1.724)/.16)**2<1.0:direction=Vector((x-math.copysign(.179,x),-.02,z-1.724))
   tangent=direction-normal*direction.dot(normal)
   if tangent.length<.01:tangent=normal.cross(Vector((.3,.9,.4)))
   tangent.normalize();jitter=Vector((rng.uniform(-1,1),rng.uniform(-1,1),rng.uniform(-1,1)))*.16
@@ -283,9 +295,10 @@ def groom_surface(obj,count,colorfn,name,length_scale=1):
  ob=create_native_groom(name,vs,radii,cols,furmat,groomcol,guidecol,count)
  print('GROOM_READY',name,ob['actual_strands'],'native curves',flush=True);return ob
 hair=groom_surface(body,a.fur,coatcolor,'Body groom')
+groom_surface(body,95000,coatcolor,'Face microgroom',.67,region='face')
 for o in ears:groom_surface(o,3000,lambda p:(.0032,.0038,.0047),'Ear groom '+o.name,.86)
-for o in inner_ears:groom_surface(o,360,lambda p:(.26,.225,.20),'Inner ear groom '+o.name,.66)
-for o in eye_lids:groom_surface(o,1600,coatcolor,'Lid groom '+o.name,.72)
+for o in inner_ears:groom_surface(o,700,lambda p:(.43,.39,.34),'Inner ear groom '+o.name,.66)
+for o in eye_lids:groom_surface(o,6000,coatcolor,'Lid groom '+o.name,.88)
 # Put the lowest original skin point on the studio plane without altering coat coordinates.
 ground_offset=min((body.matrix_world@v.co).z for v in body.data.vertices)
 for col in [root,groomcol,guidecol]:

@@ -1,44 +1,44 @@
 {
   "project": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat",
-  "updated": "2026-10-05 06:09 UTC",
-  "status": "Rendering pass 10; optical and ear-tip corrections",
+  "updated": "2026-10-05 06:42 UTC",
+  "status": "Revision 12 checkpoint: six reviewed EEVEE views; packaging the source archive",
   "progress": 50,
-  "iterations": 9,
+  "iterations": 12,
   "views": [
     {
       "id": "front",
       "label": "Front view",
-      "file": "renders/r08_front.png"
+      "file": "renders/r12_front.png"
     },
     {
       "id": "left",
       "label": "Left profile",
-      "file": "renders/r08_left.png"
+      "file": "renders/r12_left.png"
     },
     {
       "id": "right",
       "label": "Right profile",
-      "file": "renders/r08_right.png"
+      "file": "renders/r12_right.png"
     },
     {
       "id": "rear",
       "label": "Rear view",
-      "file": "renders/r08_rear.png"
+      "file": "renders/r12_rear.png"
     }
   ],
   "files": [
     {
       "type": "BLEND",
       "name": "Full Blender scene",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791149784000000000",
-      "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 61.6 MB.",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend?v=1791181815156111942",
+      "description": "Editable full-resolution sculpt, groom, materials, lights and camera. 40.8 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend"
     },
     {
       "type": "GLB",
       "name": "Interactive 3D model",
-      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791150786000000000",
-      "description": "Optimized original geometry and vertex colors for interactive web viewing. 16.1 MB.",
+      "url": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb?v=1791182142740783976",
+      "description": "Optimized original geometry and vertex colors for interactive web viewing. 16.6 MB.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.glb"
     },
     {
@@ -68,6 +68,13 @@
       "url": "downloads/Agents.md",
       "description": "Exact paths, commands, limitations and completed review history.",
       "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/Agents.md"
+    },
+    {
+      "type": "PNG",
+      "name": "Four-view EEVEE sheet",
+      "url": "renders/r12_four_views_GPT-6-Astra-Pro_mcp-colabdev_Blender.png",
+      "description": "Front, right, rear and left: assembled from the actual current Blender renders.",
+      "path": "/home/dev/project/3d/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat/preview/renders/r12_four_views_GPT-6-Astra-Pro_mcp-colabdev_Blender.png"
     }
   ],
   "journal": [
@@ -147,12 +154,36 @@
       "notes": "Hero reviewed: finer native strands, a lifted chin and less uniform brow whiskers improve form. The experimental reflection film flattens the pupils, so this pass is below the recovered 86 score. Correcting shallow physical cornea, groomed eyelid margins and scalp-resting folded ear tips.",
       "score": 85,
       "image": "renders/r09_hero.png"
+    },
+    {
+      "step": "PASS 10",
+      "time": "06:17",
+      "title": "Rounder eyes and scalp-resting folded ears",
+      "notes": "Reviewed front, profile, rear, hero and close-up. Shallow cornea restores better eye depth; ear tips follow the scalp. The fast review mode uses reduced shadow sampling. Next: stagger the coincident legs, add dense facial microfur and soften the triangular nose.",
+      "score": 87,
+      "image": "renders/r10_hero.png"
+    },
+    {
+      "step": "PASS 11",
+      "time": "06:23",
+      "title": "Dense facial microfur and natural staggered stance",
+      "notes": "Reviewed hero, detail and right profile. Denser short facial fibers remove the coarse scalp appearance, the nose is now softly lobed, and far-side paws no longer exactly coincide. Remaining priorities: eyelid rim shading, gray corneal reflection, and soft presentation lighting.",
+      "score": 88,
+      "image": "renders/r11_hero.png"
+    },
+    {
+      "step": "PASS 12",
+      "time": "06:38",
+      "title": "Soft studio presentation and cleaner eye shading",
+      "notes": "Reviewed hero, front, both profiles, rear and close-up. Softer EEVEE studio shadows, matte eyelids, denser facial fibers, rounded nose and staggered paws improve the original model. Still a stylized approximation: ear silhouette, optical realism and fur fidelity remain below the requested >95 target.",
+      "score": 89,
+      "image": "renders/r12_hero.png"
     }
   ],
-  "hero": "renders/r09_hero.png",
-  "score": 85,
+  "hero": "renders/r12_hero.png",
+  "score": 89,
   "model": "downloads/GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat_web.glb",
-  "modelVersion": "1791150786000000000",
-  "viewSetRevision": 8,
-  "latest_revision": 9
+  "modelVersion": "1791182321540609054",
+  "viewSetRevision": 12,
+  "latest_revision": 12
 }

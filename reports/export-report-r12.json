@@ -1,0 +1,7 @@
+{
+  "revision": 12,
+  "bytes": 17441584,
+  "objects": 79,
+  "web_strands": 14568,
+  "notes": "Portable approximation: sampled original pigment, reduced strand density, and small eye reflection meshes; full analytic shader, corneal optics and native groom are preserved in Blender."
+}

@@ -9,7 +9,7 @@ P=Path(__file__).resolve().parents[1];B=Path(os.environ.get('CAT_BUILD_DIR','/bu
 bpy.ops.wm.open_mainfile(filepath=str(B/'GPT-6-Astra-Pro_mcp-colabdev_Blender_TuxedoCat.blend'))
 bpy.ops.object.select_all(action='DESELECT');exports=[];portable={}
 def web_groom(src):
- guide=bpy.data.objects[src['guide_object']];old=guide.data;n=len(old.vertices)//4;stride=24 if src.name.startswith('Body groom') else 4;vv=[];ff=[];cc=[];ca=old.color_attributes['Coat'];ra=old.attributes['FiberRadius']
+ guide=bpy.data.objects[src['guide_object']];old=guide.data;n=len(old.vertices)//4;stride=24 if src.name.startswith('Body groom') else (18 if src.name.startswith('Face microgroom') else (10 if src.name.startswith('Lid groom') else 5));vv=[];ff=[];cc=[];ca=old.color_attributes['Coat'];ra=old.attributes['FiberRadius']
  for h in range(0,n,stride):
   pts=[old.vertices[h*4+j].co.copy() for j in range(4)];base=len(vv)
   for j,p in enumerate(pts):
@@ -54,7 +54,7 @@ for ob in exports:
   m=slot.material
   if m and (m.name.startswith('01 •') or m.name.startswith('02 •')):
    if m.name not in portable:
-    pm=m.copy();pm.name=m.name+' • portable colors';nn=pm.node_tree.nodes;ll=pm.node_tree.links;attr=nn.new('ShaderNodeVertexColor');attr.layer_name='Coat';ll.new(attr.outputs['Color'],nn.get('Principled BSDF').inputs['Base Color']);portable[m.name]=pm
+    pm=m.copy();pm.name=m.name+' • portable colors';nn=pm.node_tree.nodes;ll=pm.node_tree.links;attr=nn.new('ShaderNodeVertexColor');attr.layer_name='Coat';bs=nn.get('Principled BSDF');ll.new(attr.outputs['Color'],bs.inputs['Base Color']);bs.inputs['Sheen Weight'].default_value=0;bs.inputs['Roughness'].default_value=.94;bs.inputs['Specular IOR Level'].default_value=.04;portable[m.name]=pm
    slot.material=portable[m.name]
  ob.select_set(True)
 bpy.context.view_layer.objects.active=exports[0];bpy.ops.object.convert(target='MESH')

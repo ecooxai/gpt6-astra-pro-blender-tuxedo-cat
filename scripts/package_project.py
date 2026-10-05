@@ -10,7 +10,8 @@ for f in P.rglob('*'):
  if parts[0] not in {'scripts','preview','reports'} and str(rel) not in allowed_top:continue
  if any(x in {'node_modules','__pycache__','.git','logs','reference'} for x in parts):continue
  if f.suffix in {'.zip','.pyc','.blend1','.exr','.pfm','.log','.tmp'} or '.pending.' in f.name or f.name.startswith('.'):continue
- if f.name.endswith('.sha256') or f.name=='PROJECT_MANIFEST.json':continue
+ if f.name.endswith('.sha256') or f.name in {'PROJECT_MANIFEST.json','archive-validation.json'}:continue
+ if f.suffix.lower() in {'.ttf','.otf','.woff','.woff2','.pem','.key'}:raise RuntimeError('Forbidden distributable file: '+str(f))
  files.append(f)
 files.sort();status=json.loads((P/'preview/status.json').read_text());manifest={'project':N,'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),'reviewed_main_iterations':status.get('iterations',0),'latest_self_assessed_score':status.get('score'),'requested_iterations':20000,'requested_score_above':95,'files':[]}
 for f in files:

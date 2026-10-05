@@ -3,3 +3,6 @@ logs/
 *.blend1
 node_modules/
 __pycache__/
+
+/preview/downloads/*.zip
+/preview/downloads/*.pending.*
